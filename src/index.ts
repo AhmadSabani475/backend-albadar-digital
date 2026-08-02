@@ -12,6 +12,12 @@ async function init() {
         const port = 3000
 
         app.use(bodyParser.json());
+        app.get('/', (req, res) => {
+            res.status(200).json({
+                message: "Server is Running",
+                data: null
+            })
+        })
         app.use('/api', router);
 
         app.listen(port, () => {
