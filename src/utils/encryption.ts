@@ -1,8 +1,11 @@
-import crypto from "crypto";
-import { SECRET } from "./env";
+import bcrypt from "bcrypt";
 
-export const encrypt = (password: string): string => {
-    const enrypted = crypto.pbkdf2Sync(password, SECRET, 1000, 64, 'sha512')
-        .toString('hex');
-    return enrypted;
+const SALT_ROUNDS = 10;
+
+export const encrypt = async (password: string): Promise<string> => {
+    return await bcrypt.hash(password, SALT_ROUNDS);
+}
+
+export const comparePassword = async (password: string, hashedPassword: string): Promise<boolean> => {
+    return await bcrypt.compare(password, hashedPassword);
 }

@@ -1,15 +1,13 @@
 import { Request, Response } from "express"
 import * as Yup from "yup";
 import userModels from "../models/user.model";
-import { encrypt } from "../utils/encryption";
+import { comparePassword, encrypt } from "../utils/encryption";
 import { generateToken } from "../utils/jwt";
 import { IReqUser } from "../middleware/auth.middleware";
 type TCreateUser = {
     username: string;
     password: string;
-    nama: string;
     role: 'admin' | 'pengurus';
-    is_active?: boolean;
 };
 type TLogin = {
     username: string;
@@ -22,38 +20,43 @@ const createUserValidateSchema = Yup.object({
     password: Yup.string()
         .required("Password wajib diisi")
         .min(6, "Password minimal 6 karakter"),
-    nama: Yup.string().required("Nama wajib diisi"),
     role: Yup.string()
         .oneOf(["admin", "pengurus"], "Role harus admin atau pengurus")
-        .required("Role wajib diisi"),
-    is_active: Yup.boolean().default(false)
+        .required("Role wajib diisi")
 })
 
 export default {
     async createUser(req: Request, res: Response) {
+        /**
+         #swagger.security = [{
+            "bearerAuth" : []
+        }]
+        */
         const {
             username,
-            nama,
             password,
-            role,
-            is_active = false
+            role
         } = req.body as unknown as TCreateUser;
         try {
             await createUserValidateSchema.validate({
                 username,
                 password,
-                nama,
                 role,
-                is_active
             })
+            const existingUser = await userModels.findOne({ username });
+            if (existingUser) {
+                return res.status(400).json({
+                    message: "Username sudah dipakai",
+                    data: null
+                })
+            }
             const result = await userModels.create({
                 username,
                 password,
-                nama,
                 role,
-                is_active
+                is_active: false
             });
-            res.status(200).json({
+            res.status(201).json({
                 message: "user berhasil dibuat",
                 data: result
             })
@@ -66,6 +69,14 @@ export default {
         }
     },
     async login(req: Request, res: Response) {
+        /**
+         #swagger.requestBody = {
+            required: true,
+            schema: {
+                $ref: "#components/schemas/LoginRequest"
+            }
+         }
+         */
         const { username, password } = req.body as unknown as TLogin;
         try {
             const user = await userModels.findOne({ username: username })
@@ -76,7 +87,7 @@ export default {
                     data: null
                 });
             };
-            const validatePassword: boolean = encrypt(password) === user.password;
+            const validatePassword: boolean = await comparePassword(password,user.password);
 
             if (!validatePassword) {
                 return res.status(403).json({
@@ -101,6 +112,11 @@ export default {
         }
     },
     async me(req: IReqUser, res: Response) {
+        /**
+         #swagger.security = [{
+            "bearerAuth" : []
+         }]
+         */
         try {
             const user = req.user;
             const result = await userModels.findById(user?.id);

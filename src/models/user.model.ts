@@ -7,15 +7,18 @@ const schema = mongoose.Schema;
 const UserSchema = new schema<User>({
     username: {
         type: schema.Types.String,
+        unique: true,
         required: true
     },
     password: {
         type: schema.Types.String,
         required: true
     },
-    nama: {
-        type: schema.Types.String,
-        required: true
+    santriId: {
+        type: schema.Types.ObjectId,
+        ref: "Santri",
+        required: false,
+        default: null
     },
     role: {
         type: schema.Types.String,
@@ -30,9 +33,11 @@ const UserSchema = new schema<User>({
 }, {
     timestamps: true
 })
-UserSchema.pre('save', function (next) {
+UserSchema.pre('save', async function (next) {
     const user = this;
-    user.password = encrypt(user.password);
+    if(user.isModified('password')){
+        user.password = await encrypt(user.password);
+    }
     next();
 })
 
