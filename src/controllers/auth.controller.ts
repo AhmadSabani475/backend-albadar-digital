@@ -4,6 +4,9 @@ import userModels from "../models/user.model";
 import { comparePassword, encrypt } from "../utils/encryption";
 import { generateToken } from "../utils/jwt";
 import { IReqUser } from "../middleware/auth.middleware";
+import { completeProfileValidateSchema, TCompleteProfile } from "./santri.controller";
+import KamarModels from "../models/kamar.models";
+import SantriModels from "../models/santri.models";
 type TCreateUser = {
     username: string;
     password: string;
@@ -87,11 +90,11 @@ export default {
                     data: null
                 });
             };
-            const validatePassword: boolean = await comparePassword(password,user.password);
+            const validatePassword: boolean = await comparePassword(password, user.password);
 
             if (!validatePassword) {
                 return res.status(403).json({
-                    message: "User Not Found",
+                    message: "Debug: Password salah / Hash tidak cocok",
                     data: null
                 });
             }
@@ -124,6 +127,59 @@ export default {
                 message: 'Success get User',
                 data: result
             })
+        } catch (error) {
+            const err = error as unknown as Error;
+            res.status(400).json({
+                message: err.message,
+                data: null
+            })
+        }
+    },
+    async completeProfile(req: IReqUser, res: Response) {
+        const { password, santri } = req.body as unknown as TCompleteProfile;
+        try {
+            await completeProfileValidateSchema.validate({ password, santri });
+
+            const kamar = await KamarModels.findById(santri.kamarId);
+            if (!kamar) {
+                return res.status(404).json({
+                    message: "Kamar tidak ditemukan",
+                    data: null
+                })
+            }
+
+            const jumlahSantriDiKamar = await SantriModels.countDocuments({ kamarId: santri.kamarId });
+            if (jumlahSantriDiKamar >= kamar.kapasitas) {
+                return res.status(400).json({
+                    message: "Kamar Sudah Penuh",
+                    data: null
+                })
+            }
+
+            const santriBaru = await SantriModels.create({
+                ...santri,
+                tanggalTerdaftar: new Date(),
+                status: 'aktif'
+            })
+
+            const user = await userModels.findById(req.user?.id);
+            if (!user) {
+                return res.status(404).json({
+                    message: "User tidak ditemukan",
+                    data: null
+                })
+            }
+
+            user.password = password;
+            user.santriId = santriBaru._id;
+            user.is_active = true;
+            await user.save();
+
+            res.status(200).json({
+                message: "Profil berhasil dilengkapi",
+                data: user
+            });
+
         } catch (error) {
             const err = error as unknown as Error;
             res.status(400).json({
