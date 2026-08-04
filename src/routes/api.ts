@@ -9,7 +9,7 @@ const router = express.Router();
 router.post('/auth', authMiddleware, checkRole(['admin']), authController.createUser);
 router.post('/auth/login', authController.login);
 router.get('/auth/me', authMiddleware, authController.me);
-router.post('/auth/complete-profile', authMiddleware, authController.completeProfile);
+router.put('/auth/complete-profile', authMiddleware, authController.completeProfile);
 
 router.post('/asrama', authMiddleware, checkRole(['admin']), asramaController.create);
 router.get('/asrama', authMiddleware, asramaController.findAll);
