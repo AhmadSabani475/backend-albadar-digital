@@ -18,7 +18,11 @@
   "paths": {
     "/auth": {
       "post": {
-        "description": "",
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Buat akun pengurus baru (khusus admin)",
+        "description": "Admin membuat kredensial awal untuk pengurus. is_active otomatis false, wajib complete-profile saat login pertama.",
         "responses": {
           "201": {
             "description": "Created"
@@ -36,19 +40,27 @@
           }
         ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
                 "properties": {
                   "username": {
-                    "example": "any"
+                    "type": "string",
+                    "example": "pengurus01"
                   },
                   "password": {
-                    "example": "any"
+                    "type": "string",
+                    "example": "password123"
                   },
                   "role": {
-                    "example": "any"
+                    "type": "string",
+                    "enum": [
+                      "admin",
+                      "pengurus"
+                    ],
+                    "example": "pengurus"
                   }
                 }
               }
@@ -59,7 +71,11 @@
     },
     "/auth/login": {
       "post": {
-        "description": "",
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Login",
+        "description": "Login dengan username dan password, mengembalikan JWT token. Boleh dipanggil walau is_active masih false.",
         "responses": {
           "200": {
             "description": "OK"
@@ -76,12 +92,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#components/schemas/LoginRequest"
-              }
-            },
-            "application/xml": {
-              "schema": {
-                "$ref": "#components/schemas/LoginRequest"
+                "$ref": "#/components/schemas/LoginRequest"
               }
             }
           }
@@ -90,7 +101,11 @@
     },
     "/auth/me": {
       "get": {
-        "description": "",
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Ambil data user yang sedang login",
+        "description": "Mengembalikan data user beserta data santri terkait (jika sudah complete-profile)",
         "responses": {
           "200": {
             "description": "OK"
@@ -111,7 +126,11 @@
     },
     "/auth/complete-profile": {
       "post": {
-        "description": "",
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Lengkapi profil saat first login",
+        "description": "Dipanggil oleh pengurus yang is_active masih false. Sekaligus reset password, isi data santri, dan assign kamar.",
         "responses": {
           "200": {
             "description": "OK"
@@ -126,23 +145,161 @@
             "description": "Not Found"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompleteProfileRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/asrama": {
+      "post": {
+        "tags": [
+          "Asrama"
+        ],
+        "summary": "Buat asrama baru (khusus admin)",
+        "description": "",
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
                 "properties": {
-                  "password": {
-                    "example": "any"
+                  "namaAsrama": {
+                    "type": "string",
+                    "example": "Putra"
                   },
-                  "santri": {
-                    "example": "any"
+                  "keterangan": {
+                    "type": "string",
+                    "example": "Asrama santri putra"
                   }
                 }
               }
             }
           }
         }
+      },
+      "get": {
+        "tags": [
+          "Asrama"
+        ],
+        "summary": "Ambil semua data asrama",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/kamar": {
+      "post": {
+        "tags": [
+          "Kamar"
+        ],
+        "summary": "Buat kamar baru (khusus admin)",
+        "description": "",
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "namaKamar": {
+                    "type": "string",
+                    "example": "Kamar 1"
+                  },
+                  "asramaId": {
+                    "type": "string",
+                    "example": "6a70b7... (ambil dari GET /asrama)"
+                  },
+                  "kapasitas": {
+                    "type": "number",
+                    "example": 10
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Kamar"
+        ],
+        "summary": "Ambil semua data kamar (beserta nama asrama)",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     }
   },
@@ -165,9 +322,127 @@
             "type": "string",
             "example": "ahmad1234"
           }
-        },
-        "xml": {
-          "name": "LoginRequest"
+        }
+      },
+      "CompleteProfileRequest": {
+        "type": "object",
+        "properties": {
+          "password": {
+            "type": "string",
+            "example": "passwordBaru123"
+          },
+          "santri": {
+            "type": "object",
+            "properties": {
+              "nis": {
+                "type": "string",
+                "example": "12345"
+              },
+              "namaLengkap": {
+                "type": "string",
+                "example": "Ahmad Fauzi"
+              },
+              "tempatLahir": {
+                "type": "string",
+                "example": "Bandung"
+              },
+              "tanggalLahir": {
+                "type": "string",
+                "example": "2010-05-14"
+              },
+              "anakKe": {
+                "type": "number",
+                "example": 1
+              },
+              "jumlahSaudara": {
+                "type": "number",
+                "example": 2
+              },
+              "asalPesantren": {
+                "type": "string",
+                "example": ""
+              },
+              "pendidikanTerakhir": {
+                "type": "string",
+                "example": "SD"
+              },
+              "ayah": {
+                "type": "object",
+                "properties": {
+                  "nama": {
+                    "type": "string",
+                    "example": "Bapak Fauzi"
+                  },
+                  "pendidikan": {
+                    "type": "string",
+                    "example": "S1"
+                  },
+                  "pekerjaan": {
+                    "type": "string",
+                    "example": "Wiraswasta"
+                  }
+                }
+              },
+              "ibu": {
+                "type": "object",
+                "properties": {
+                  "nama": {
+                    "type": "string",
+                    "example": "Ibu Fauzi"
+                  },
+                  "pendidikan": {
+                    "type": "string",
+                    "example": "SMA"
+                  },
+                  "pekerjaan": {
+                    "type": "string",
+                    "example": "Ibu Rumah Tangga"
+                  }
+                }
+              },
+              "alamat": {
+                "type": "object",
+                "properties": {
+                  "jalan": {
+                    "type": "string",
+                    "example": "Jl. Merdeka No. 10"
+                  },
+                  "rtRw": {
+                    "type": "string",
+                    "example": "01/02"
+                  },
+                  "desaKelurahan": {
+                    "type": "string",
+                    "example": "Sukamaju"
+                  },
+                  "kecamatan": {
+                    "type": "string",
+                    "example": "Cibeunying"
+                  },
+                  "kabupatenKota": {
+                    "type": "string",
+                    "example": "Bandung"
+                  },
+                  "provinsi": {
+                    "type": "string",
+                    "example": "Jawa Barat"
+                  },
+                  "noTelepon": {
+                    "type": "string",
+                    "example": "081234567890"
+                  }
+                }
+              },
+              "sekolah": {
+                "type": "string",
+                "example": "SMP Negeri 1 Bandung"
+              },
+              "kamarId": {
+                "type": "string",
+                "example": "6a70b8c24a9e37be1b9ee040"
+              }
+            }
+          }
         }
       }
     }

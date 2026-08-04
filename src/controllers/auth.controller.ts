@@ -31,10 +31,26 @@ const createUserValidateSchema = Yup.object({
 export default {
     async createUser(req: Request, res: Response) {
         /**
-         #swagger.security = [{
-            "bearerAuth" : []
-        }]
-        */
+          #swagger.tags = ['Auth']
+          #swagger.summary = 'Buat akun pengurus baru (khusus admin)'
+          #swagger.description = 'Admin membuat kredensial awal untuk pengurus. is_active otomatis false, wajib complete-profile saat login pertama.'
+          #swagger.security = [{ "bearerAuth": [] }]
+          #swagger.requestBody = {
+             required: true,
+             content: {
+                 "application/json": {
+                     schema: {
+                         type: "object",
+                         properties: {
+                             username: { type: "string", example: "pengurus01" },
+                             password: { type: "string", example: "password123" },
+                             role: { type: "string", enum: ["admin", "pengurus"], example: "pengurus" }
+                         }
+                     }
+                 }
+             }
+          }
+             */
         const {
             username,
             password,
@@ -73,13 +89,18 @@ export default {
     },
     async login(req: Request, res: Response) {
         /**
+         #swagger.tags = ['Auth']
+         #swagger.summary = 'Login'
+         #swagger.description = 'Login dengan username dan password, mengembalikan JWT token. Boleh dipanggil walau is_active masih false.'
          #swagger.requestBody = {
             required: true,
-            schema: {
-                $ref: "#components/schemas/LoginRequest"
+            content: {
+                "application/json": {
+                    schema: { $ref: "#/components/schemas/LoginRequest" }
+                }
             }
          }
-         */
+        */
         const { username, password } = req.body as unknown as TLogin;
         try {
             const user = await userModels.findOne({ username: username })
@@ -116,13 +137,14 @@ export default {
     },
     async me(req: IReqUser, res: Response) {
         /**
-         #swagger.security = [{
-            "bearerAuth" : []
-         }]
-         */
+         #swagger.tags = ['Auth']
+         #swagger.summary = 'Ambil data user yang sedang login'
+         #swagger.description = 'Mengembalikan data user beserta data santri terkait (jika sudah complete-profile)'
+         #swagger.security = [{ "bearerAuth": [] }]
+        */
         try {
             const user = req.user;
-            const result = await userModels.findById(user?.id);
+            const result = await userModels.findById(user?.id).populate('santriId');
             res.status(200).json({
                 message: 'Success get User',
                 data: result
@@ -136,6 +158,20 @@ export default {
         }
     },
     async completeProfile(req: IReqUser, res: Response) {
+        /**
+        #swagger.tags = ['Auth']
+        #swagger.summary = 'Lengkapi profil saat first login'
+        #swagger.description = 'Dipanggil oleh pengurus yang is_active masih false. Sekaligus reset password, isi data santri, dan assign kamar.'
+        #swagger.security = [{ "bearerAuth": [] }]
+        #swagger.requestBody = {
+           required: true,
+           content: {
+               "application/json": {
+                   schema: { $ref: "#/components/schemas/CompleteProfileRequest" }
+               }
+           }
+        }
+       */
         const { password, santri } = req.body as unknown as TCompleteProfile;
         try {
             await completeProfileValidateSchema.validate({ password, santri });
