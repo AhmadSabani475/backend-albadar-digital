@@ -9,7 +9,6 @@ import KamarModels from "../models/kamar.models";
 import SantriModels from "../models/santri.models";
 type TCreateUser = {
     username: string;
-    password: string;
     role: 'admin' | 'pengurus';
 };
 type TLogin = {
@@ -20,13 +19,15 @@ const createUserValidateSchema = Yup.object({
     username: Yup.string()
         .required("Username wajib diisi")
         .min(3, "Username minimal 3 karakter"),
-    password: Yup.string()
-        .required("Password wajib diisi")
-        .min(6, "Password minimal 6 karakter"),
     role: Yup.string()
         .oneOf(["admin", "pengurus"], "Role harus admin atau pengurus")
         .required("Role wajib diisi")
 })
+
+function generateDefaultPassword(username: string): string {
+    const randomDigits = Math.floor(1000 + Math.random() * 9000); // 4 digit acak
+    return `${username}${randomDigits}`;
+}
 
 export default {
     async createUser(req: Request, res: Response) {
@@ -43,7 +44,6 @@ export default {
                          type: "object",
                          properties: {
                              username: { type: "string", example: "pengurus01" },
-                             password: { type: "string", example: "password123" },
                              role: { type: "string", enum: ["admin", "pengurus"], example: "pengurus" }
                          }
                      }
@@ -53,13 +53,11 @@ export default {
              */
         const {
             username,
-            password,
             role
         } = req.body as unknown as TCreateUser;
         try {
             await createUserValidateSchema.validate({
                 username,
-                password,
                 role,
             })
             const existingUser = await userModels.findOne({ username });
@@ -69,15 +67,21 @@ export default {
                     data: null
                 })
             }
+
+            const generatedPassword = generateDefaultPassword(username);
+
             const result = await userModels.create({
                 username,
-                password,
+                password: generatedPassword,
                 role,
                 is_active: false
             });
             res.status(201).json({
                 message: "user berhasil dibuat",
-                data: result
+                data: {
+                    ...result.toJSON(),
+                    generatedPassword
+                }
             })
         } catch (error) {
             const err = error as unknown as Error;
