@@ -16,10 +16,10 @@
     }
   ],
   "paths": {
-    "/auth": {
+    "/users": {
       "post": {
         "tags": [
-          "Auth"
+          "Users"
         ],
         "summary": "Buat akun pengurus baru (khusus admin)",
         "description": "Admin membuat kredensial awal untuk pengurus. is_active otomatis false, wajib complete-profile saat login pertama.",
@@ -49,10 +49,6 @@
                   "username": {
                     "type": "string",
                     "example": "pengurus01"
-                  },
-                  "password": {
-                    "type": "string",
-                    "example": "password123"
                   },
                   "role": {
                     "type": "string",
