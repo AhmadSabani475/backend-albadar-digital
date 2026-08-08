@@ -81,4 +81,24 @@ export default {
             })
         }
     },
+    async getAllUsers(req: Request, res: Response) {
+        /**
+    #swagger.tags = ['Users']
+    #swagger.summary = 'Ambil semua data user (khusus admin)'
+    #swagger.security = [{ "bearerAuth": [] }]
+   */
+        try {
+            const result = await userModels.find().populate('santriId');
+            return res.status(200).json({
+                message: "Get Users Success",
+                data: result
+            })
+        } catch (error) {
+            const err = error as unknown as Error;
+            res.status(400).json({
+                message: err.message,
+                data: null
+            })
+        }
+    }
 }

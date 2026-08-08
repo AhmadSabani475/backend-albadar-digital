@@ -17,6 +17,29 @@
   ],
   "paths": {
     "/users": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Ambil semua data user (khusus admin)",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
       "post": {
         "tags": [
           "Users"

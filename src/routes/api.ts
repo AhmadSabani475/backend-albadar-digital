@@ -7,6 +7,7 @@ import asramaController from "../controllers/asrama.controller";
 import usersController from "../controllers/users.controller";
 
 const router = express.Router();
+router.get('/users', authMiddleware, checkRole(['admin']), usersController.getAllUsers);
 router.post('/users', authMiddleware, checkRole(['admin']), usersController.createUser);
 router.post('/auth/login', authController.login);
 router.get('/auth/me', authMiddleware, authController.me);
