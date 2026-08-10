@@ -25,8 +25,8 @@ const doc = {
         },
         schemas: {
             LoginRequest: {
-                username: "ahmadsabani",
-                password: "ahmad1234"
+                username: "sabani",
+                password: "sabani12345"
             },
             CompleteProfileRequest: {
                 password: "passwordBaru123",
@@ -61,6 +61,37 @@ const doc = {
                     sekolah: "SMP Negeri 1 Bandung",
                     kamarId: "6a70b8c24a9e37be1b9ee040"
                 }
+            },
+            CreateSantriRequest: {
+                nis: "12345",
+                namaLengkap: "Ahmad Fauzi",
+                tempatLahir: "Bandung",
+                tanggalLahir: "2010-05-14",
+                anakKe: 1,
+                jumlahSaudara: 2,
+                asalPesantren: "",
+                pendidikanTerakhir: "SD",
+                ayah: {
+                    nama: "Bapak Fauzi",
+                    pendidikan: "S1",
+                    pekerjaan: "Wiraswasta"
+                },
+                ibu: {
+                    nama: "Ibu Fauzi",
+                    pendidikan: "SMA",
+                    pekerjaan: "Ibu Rumah Tangga"
+                },
+                alamat: {
+                    jalan: "Jl. Merdeka No. 10",
+                    rtRw: "01/02",
+                    desaKelurahan: "Sukamaju",
+                    kecamatan: "Cibeunying",
+                    kabupatenKota: "Bandung",
+                    provinsi: "Jawa Barat",
+                    noTelepon: "081234567890"
+                },
+                sekolah: "SMP Negeri 1 Bandung",
+                kamarId: "6a70b8c24a9e37be1b9ee040"
             }
         }
     }

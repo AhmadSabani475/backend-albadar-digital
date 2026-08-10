@@ -181,6 +181,67 @@
         }
       }
     },
+    "/santri": {
+      "post": {
+        "tags": [
+          "Santri"
+        ],
+        "summary": "Tambah santri manual (khusus admin)",
+        "description": "Admin menambahkan data santri secara langsung, tanpa membuat akun login. Digunakan untuk santri yang bukan pengurus.",
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSantriRequest"
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Santri"
+        ],
+        "summary": "Ambil semua data Santri (khusus admin)",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
     "/asrama": {
       "post": {
         "tags": [
@@ -335,11 +396,11 @@
         "properties": {
           "username": {
             "type": "string",
-            "example": "ahmadsabani"
+            "example": "sabani"
           },
           "password": {
             "type": "string",
-            "example": "ahmad1234"
+            "example": "sabani12345"
           }
         }
       },
@@ -461,6 +522,118 @@
                 "example": "6a70b8c24a9e37be1b9ee040"
               }
             }
+          }
+        }
+      },
+      "CreateSantriRequest": {
+        "type": "object",
+        "properties": {
+          "nis": {
+            "type": "string",
+            "example": "12345"
+          },
+          "namaLengkap": {
+            "type": "string",
+            "example": "Ahmad Fauzi"
+          },
+          "tempatLahir": {
+            "type": "string",
+            "example": "Bandung"
+          },
+          "tanggalLahir": {
+            "type": "string",
+            "example": "2010-05-14"
+          },
+          "anakKe": {
+            "type": "number",
+            "example": 1
+          },
+          "jumlahSaudara": {
+            "type": "number",
+            "example": 2
+          },
+          "asalPesantren": {
+            "type": "string",
+            "example": ""
+          },
+          "pendidikanTerakhir": {
+            "type": "string",
+            "example": "SD"
+          },
+          "ayah": {
+            "type": "object",
+            "properties": {
+              "nama": {
+                "type": "string",
+                "example": "Bapak Fauzi"
+              },
+              "pendidikan": {
+                "type": "string",
+                "example": "S1"
+              },
+              "pekerjaan": {
+                "type": "string",
+                "example": "Wiraswasta"
+              }
+            }
+          },
+          "ibu": {
+            "type": "object",
+            "properties": {
+              "nama": {
+                "type": "string",
+                "example": "Ibu Fauzi"
+              },
+              "pendidikan": {
+                "type": "string",
+                "example": "SMA"
+              },
+              "pekerjaan": {
+                "type": "string",
+                "example": "Ibu Rumah Tangga"
+              }
+            }
+          },
+          "alamat": {
+            "type": "object",
+            "properties": {
+              "jalan": {
+                "type": "string",
+                "example": "Jl. Merdeka No. 10"
+              },
+              "rtRw": {
+                "type": "string",
+                "example": "01/02"
+              },
+              "desaKelurahan": {
+                "type": "string",
+                "example": "Sukamaju"
+              },
+              "kecamatan": {
+                "type": "string",
+                "example": "Cibeunying"
+              },
+              "kabupatenKota": {
+                "type": "string",
+                "example": "Bandung"
+              },
+              "provinsi": {
+                "type": "string",
+                "example": "Jawa Barat"
+              },
+              "noTelepon": {
+                "type": "string",
+                "example": "081234567890"
+              }
+            }
+          },
+          "sekolah": {
+            "type": "string",
+            "example": "SMP Negeri 1 Bandung"
+          },
+          "kamarId": {
+            "type": "string",
+            "example": "6a70b8c24a9e37be1b9ee040"
           }
         }
       }
