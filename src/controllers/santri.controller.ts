@@ -5,10 +5,7 @@ import * as Yup from "yup";
 import { Request, Response } from "express";
 import { Types } from "mongoose";
 
-export type TCompleteProfile = {
-    password: string;
-    santri: Omit<Santri, 'status' | 'tanggalTerdaftar'>;
-}
+
 
 const orangtuaValidateSchema = Yup.object({
     nama: Yup.string().required("Nama wajib diisi"),
@@ -40,12 +37,6 @@ const santriValidateSchema = Yup.object({
     alamat: alamatValidateSchema.required("Alamat wajib diisi"),
     sekolah: Yup.string().required("Sekolah wajib diisi"),
     kamarId: Yup.string().required("Kamar wajib dipilih"),
-})
-
-const completeProfileValidateSchema = Yup.object({
-    password: Yup.string().required("Password wajib diisi")
-        .min(6, "Password minimal 6 karakter"),
-    santri: santriValidateSchema.required("Data Santri Wajib Diisi")
 })
 
 export default {
@@ -285,5 +276,3 @@ export default {
     },
 
 }
-
-export { completeProfileValidateSchema }

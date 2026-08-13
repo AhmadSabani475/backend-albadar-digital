@@ -55,6 +55,9 @@
           },
           "403": {
             "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
           }
         },
         "security": [
@@ -143,13 +146,13 @@
         ]
       }
     },
-    "/auth/complete-profile": {
+    "/auth/set-password": {
       "put": {
         "tags": [
           "Auth"
         ],
-        "summary": "Lengkapi profil saat first login",
-        "description": "Dipanggil oleh pengurus yang is_active masih false. Sekaligus reset password, isi data santri, dan assign kamar.",
+        "summary": "Set password pertama kali",
+        "description": "Dipanggil pengurus yang is_active masih false untuk mengganti password default dan mengaktifkan akun.",
         "responses": {
           "200": {
             "description": "OK"
@@ -174,7 +177,13 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CompleteProfileRequest"
+                "type": "object",
+                "properties": {
+                  "password": {
+                    "type": "string",
+                    "example": "passwordbaru123"
+                  }
+                }
               }
             }
           }

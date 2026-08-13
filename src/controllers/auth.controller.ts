@@ -3,9 +3,7 @@ import userModels from "../models/user.model";
 import { comparePassword, encrypt } from "../utils/encryption";
 import { generateToken } from "../utils/jwt";
 import { IReqUser } from "../middleware/auth.middleware";
-import { completeProfileValidateSchema, TCompleteProfile } from "./santri.controller";
-import KamarModels from "../models/kamar.models";
-import SantriModels from "../models/santri.models";
+
 
 type TLogin = {
     username: string;
@@ -83,47 +81,34 @@ export default {
             })
         }
     },
-    async completeProfile(req: IReqUser, res: Response) {
+    async setPassword(req: IReqUser, res: Response) {
         /**
-        #swagger.tags = ['Auth']
-        #swagger.summary = 'Lengkapi profil saat first login'
-        #swagger.description = 'Dipanggil oleh pengurus yang is_active masih false. Sekaligus reset password, isi data santri, dan assign kamar.'
-        #swagger.security = [{ "bearerAuth": [] }]
-        #swagger.requestBody = {
-           required: true,
-           content: {
-               "application/json": {
-                   schema: { $ref: "#/components/schemas/CompleteProfileRequest" }
-               }
-           }
-        }
-       */
-        const { password, santri } = req.body as unknown as TCompleteProfile;
+   #swagger.tags = ['Auth']
+   #swagger.summary = 'Set password pertama kali'
+   #swagger.description = 'Dipanggil pengurus yang is_active masih false untuk mengganti password default dan mengaktifkan akun.'
+   #swagger.security = [{ "bearerAuth": [] }]
+   #swagger.requestBody = {
+      required: true,
+      content: {
+          "application/json": {
+              schema: {
+                  type: "object",
+                  properties: {
+                      password: { type: "string", example: "passwordbaru123" }
+                  }
+              }
+          }
+      }
+   }
+  */
+        const { password } = req.body as unknown as { password: string };
         try {
-            await completeProfileValidateSchema.validate({ password, santri });
-
-            const kamar = await KamarModels.findById(santri.kamarId);
-            if (!kamar) {
-                return res.status(404).json({
-                    message: "Kamar tidak ditemukan",
-                    data: null
-                })
-            }
-
-            const jumlahSantriDiKamar = await SantriModels.countDocuments({ kamarId: santri.kamarId });
-            if (jumlahSantriDiKamar >= kamar.kapasitas) {
+            if (!password || password.length < 6) {
                 return res.status(400).json({
-                    message: "Kamar Sudah Penuh",
+                    message: "Password minimal 6 karakter",
                     data: null
                 })
             }
-
-            const santriBaru = await SantriModels.create({
-                ...santri,
-                tanggalTerdaftar: new Date(),
-                status: 'aktif'
-            })
-
             const user = await userModels.findById(req.user?.id);
             if (!user) {
                 return res.status(404).json({
@@ -133,12 +118,10 @@ export default {
             }
 
             user.password = password;
-            user.santriId = santriBaru._id;
             user.is_active = true;
             await user.save();
-
             res.status(200).json({
-                message: "Profil berhasil dilengkapi",
+                message: "Reset Password Berhasil",
                 data: user
             });
 

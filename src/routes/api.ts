@@ -13,7 +13,7 @@ router.post('/users', authMiddleware, checkRole(['admin']), usersController.crea
 
 router.post('/auth/login', authController.login);
 router.get('/auth/me', authMiddleware, authController.me);
-router.put('/auth/complete-profile', authMiddleware, authController.completeProfile);
+router.put('/auth/set-password', authMiddleware, authController.setPassword);
 
 router.post('/santri', authMiddleware, checkRole(['admin']), santriController.createSantri);
 router.get('/santri', authMiddleware, checkRole(['admin']), santriController.santriFindAll);

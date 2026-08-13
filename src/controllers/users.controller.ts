@@ -1,9 +1,11 @@
 import * as Yup from "yup";
 import { Request, Response } from "express";
 import userModels from "../models/user.model";
+import SantriModels from "../models/santri.models";
 type TCreateUser = {
     username: string;
     role: 'admin' | 'pengurus';
+    santriId?: string;
 };
 
 const createUserValidateSchema = Yup.object({
@@ -12,11 +14,12 @@ const createUserValidateSchema = Yup.object({
         .min(3, "Username minimal 3 karakter"),
     role: Yup.string()
         .oneOf(["admin", "pengurus"], "Role harus admin atau pengurus")
-        .required("Role wajib diisi")
+        .required("Role wajib diisi"),
+    santriId: Yup.string().optional()
 })
 
 function generateDefaultPassword(username: string): string {
-    const randomDigits = Math.floor(1000 + Math.random() * 9000); // 4 digit acak
+    const randomDigits = Math.floor(1000 + Math.random() * 9000);
     return `${username}${randomDigits}`;
 }
 export default {
@@ -43,12 +46,14 @@ export default {
              */
         const {
             username,
-            role
+            role,
+            santriId
         } = req.body as unknown as TCreateUser;
         try {
             await createUserValidateSchema.validate({
                 username,
                 role,
+                santriId
             })
             const existingUser = await userModels.findOne({ username });
             if (existingUser) {
@@ -57,13 +62,29 @@ export default {
                     data: null
                 })
             }
-
+            if (santriId) {
+                const santri = await SantriModels.findById(santriId);
+                if (!santri) {
+                    return res.status(404).json({
+                        message: "Santri Not Found",
+                        data: null
+                    })
+                }
+                const cekSantri = await userModels.findOne({ santriId });
+                if (cekSantri) {
+                    return res.status(400).json({
+                        message: "Santri Sudah Tertaut",
+                        data: null
+                    })
+                }
+            }
             const generatedPassword = generateDefaultPassword(username);
 
             const result = await userModels.create({
                 username,
                 password: generatedPassword,
                 role,
+                santriId: santriId ?? null,
                 is_active: false
             });
             res.status(201).json({
