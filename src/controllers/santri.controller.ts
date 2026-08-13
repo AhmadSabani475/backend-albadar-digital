@@ -64,7 +64,7 @@ export default {
          }
       }
      */
-        const santri = req.body as unknown as Omit<Santri, 'status' | 'tanggalTerdaftar'>;
+        const santri = req.body as unknown as Omit<Santri, 'status' | 'santriExist '>;
         try {
             await santriValidateSchema.validate(santri);
             const kamar = await KamarModels.findById(santri.kamarId);
@@ -162,8 +162,71 @@ export default {
         }
     },
     async editSantriById(req: Request, res: Response) {
+        /**
+    #swagger.tags = ['Santri']
+    #swagger.summary = 'Edit data santri berdasarkan ID (khusus admin)'
+    #swagger.security = [{ "bearerAuth": [] }]
+    #swagger.parameters['id'] = {
+        in: 'path',
+        required: true,
+        type: 'string',
+        description: 'ID santri (MongoDB ObjectId)'
+    }
+    #swagger.requestBody = {
+       required: true,
+       content: {
+           "application/json": {
+               schema: { $ref: "#/components/schemas/CreateSantriRequest" }
+           }
+       }
+    }
+    */
         try {
+            const { id } = req.params;
+            if (!Types.ObjectId.isValid(id)) {
+                return res.status(400).json({
+                    message: "ID Not Valid",
+                    success: false
+                })
+            }
+            const santriExist = await SantriModels.findById(id);
+            if (!santriExist) {
+                return res.status(404).json({
+                    message: "ID Santri Tidak ditemukan",
+                    success: false
+                });
+            };
 
+            const santri = req.body as unknown as Omit<Santri, 'status' | 'tanggalTerdaftar'>
+            await santriValidateSchema.validate(santri);
+
+            if (santri.kamarId && santri.kamarId.toString() !== santriExist.kamarId?.toString()) {
+                const kamar = await KamarModels.findById(santri.kamarId);
+                if (!kamar) {
+                    return res.status(404).json({
+                        message: "Kamar tidak ditemukan",
+                        data: null
+                    });
+                }
+                const jumlahSantriDiKamar = await SantriModels.countDocuments({ kamarId: santri.kamarId });
+                if (jumlahSantriDiKamar >= kamar.kapasitas) {
+                    return res.status(400).json({
+                        message: "kamar sudah penuh",
+                        data: null
+                    })
+                }
+            }
+
+            const santriUpdated = await SantriModels.findByIdAndUpdate(
+                id,
+                { ...santri },
+                { new: true, runValidators: true }
+            )
+
+            return res.status(200).json({
+                message: "Santri Success Updated",
+                data: santriUpdated
+            })
         } catch (error) {
             const err = error as unknown as Error;
             res.status(400).json({
