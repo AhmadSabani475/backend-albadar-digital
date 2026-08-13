@@ -13,7 +13,6 @@ type TLogin = {
 }
 
 export default {
-  
     async login(req: Request, res: Response) {
         /**
          #swagger.tags = ['Auth']

@@ -3,6 +3,7 @@ import SantriModels from "../models/santri.models";
 import { Santri } from "../types/Santri";
 import * as Yup from "yup";
 import { Request, Response } from "express";
+import { Types } from "mongoose";
 
 export type TCompleteProfile = {
     password: string;
@@ -113,6 +114,56 @@ export default {
                 message: 'Data Santri Berhasil diambil',
                 data: result
             })
+        } catch (error) {
+            const err = error as unknown as Error;
+            res.status(400).json({
+                message: err.message,
+                data: null
+            })
+        }
+    },
+    async getSantriById(req: Request, res: Response) {
+        /**
+         #swagger.tags = ['Santri']
+         #swagger.summary = 'Ambil data santri berdasarkan ID'
+         #swagger.security = [{ "bearerAuth": [] }]
+          #swagger.parameters['id'] = {
+     in: 'path',
+     required: true,
+     type: 'string',
+     description: 'ID santri (MongoDB ObjectId)'
+ }
+
+         */
+        try {
+            const { id } = req.params;
+            if (!Types.ObjectId.isValid(id)) {
+                return res.status(400).json({
+                    message: "ID Not Valid",
+                    success: false
+                })
+            }
+            const santri = await SantriModels.findById(id);
+            if (!santri) {
+                return res.status(404).json({
+                    message: "ID Santri Tidak ditemukan",
+                    success: false
+                });
+            };
+            return res.status(200).json({
+                message: "Success Get Santri By Id",
+                data: santri
+            })
+        } catch (error) {
+            return res.status(500).json({
+                success: false,
+                message: "Internal server error",
+            });
+        }
+    },
+    async editSantriById(req: Request, res: Response) {
+        try {
+
         } catch (error) {
             const err = error as unknown as Error;
             res.status(400).json({

@@ -17,6 +17,7 @@ router.put('/auth/complete-profile', authMiddleware, authController.completeProf
 
 router.post('/santri', authMiddleware, checkRole(['admin']), santriController.createSantri);
 router.get('/santri', authMiddleware, checkRole(['admin']), santriController.santriFindAll);
+router.get('/santri/:id', authMiddleware, santriController.getSantriById);
 
 router.post('/asrama', authMiddleware, checkRole(['admin']), asramaController.create);
 router.get('/asrama', authMiddleware, asramaController.findAll);
