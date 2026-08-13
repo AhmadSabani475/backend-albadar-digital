@@ -19,6 +19,7 @@ router.post('/santri', authMiddleware, checkRole(['admin']), santriController.cr
 router.get('/santri', authMiddleware, checkRole(['admin']), santriController.santriFindAll);
 router.get('/santri/:id', authMiddleware, santriController.getSantriById);
 router.put('/santri/:id', authMiddleware, checkRole(['admin']), santriController.editSantriById)
+router.delete('/santri/:id', authMiddleware, checkRole(['admin']), santriController.deleteSantriById)
 
 router.post('/asrama', authMiddleware, checkRole(['admin']), asramaController.create);
 router.get('/asrama', authMiddleware, asramaController.findAll);

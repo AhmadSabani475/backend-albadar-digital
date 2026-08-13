@@ -234,7 +234,56 @@ export default {
                 data: null
             })
         }
-    }
+    },
+    async deleteSantriById(req: Request, res: Response) {
+        /**
+   #swagger.tags = ['Santri']
+   #swagger.summary = 'Hapus data santri berdasarkan ID (khusus admin)'
+   #swagger.security = [{ "bearerAuth": [] }]
+   #swagger.parameters['id'] = {
+       in: 'path',
+       required: true,
+       type: 'string',
+       description: 'ID santri (MongoDB ObjectId)'
+   }
+   #swagger.responses[200] = {
+       description: 'Santri berhasil dihapus'
+   }
+   #swagger.responses[400] = {
+       description: 'ID tidak valid'
+   }
+   #swagger.responses[404] = {
+       description: 'Santri tidak ditemukan'
+   }
+   */
+        try {
+            const { id } = req.params;
+            if (!Types.ObjectId.isValid(id)) {
+                return res.status(400).json({
+                    message: "ID Not Valid",
+                    success: false
+                })
+            }
+            const deleteSantri = await SantriModels.findByIdAndDelete(id);
+            if (!deleteSantri) {
+                return res.status(404).json({
+                    message: "Santri Tidak Ditemukan",
+                    success: false
+                })
+            }
+            return res.status(200).json({
+                message: "Data Santri Berhasil dihapus",
+                success: true
+            })
+        } catch (error) {
+            const err = error as unknown as Error;
+            res.status(400).json({
+                message: err.message,
+                data: null
+            })
+        }
+    },
+
 }
 
 export { completeProfileValidateSchema }
