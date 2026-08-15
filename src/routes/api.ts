@@ -10,6 +10,7 @@ import santriController from "../controllers/santri.controller";
 const router = express.Router();
 router.get('/users', authMiddleware, checkRole(['admin']), usersController.getAllUsers);
 router.post('/users', authMiddleware, checkRole(['admin']), usersController.createUser);
+router.delete('/users/:id', authMiddleware, checkRole(['admin']), usersController.deleteUserById)
 
 router.post('/auth/login', authController.login);
 router.get('/auth/me', authMiddleware, authController.me);

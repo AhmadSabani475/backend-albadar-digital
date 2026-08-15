@@ -121,5 +121,38 @@ export default {
                 data: null
             })
         }
+    },
+    async deleteUserById(req: Request, res: Response) {
+        /**
+    #swagger.tags = ['Users']
+    #swagger.summary = 'Hapus User'
+    #swagger.security = [{ "bearerAuth": [] }]
+       #swagger.parameters['id'] = {
+       in: 'path',
+       required: true,
+       type: 'string',
+       description: 'ID santri (MongoDB ObjectId)'
+   }
+   */
+        try {
+            const {id} = req.params;
+            const user = await userModels.findByIdAndDelete(id);
+            if (!user) {
+                return res.status(404).json({
+                    message: "User Not Found",
+                    success: false
+                })
+            }
+            return res.status(200).json({
+                message: "User Deleted",
+                success: true
+            })
+        } catch (error) {
+            const err = error as unknown as Error;
+            res.status(400).json({
+                message: err.message,
+                success: false
+            })
+        }
     }
-}
+}       
