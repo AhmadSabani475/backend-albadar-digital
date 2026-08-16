@@ -292,10 +292,6 @@
     },
     "/santri/{id}": {
       "get": {
-        "tags": [
-          "Santri"
-        ],
-        "summary": "Ambil data santri berdasarkan ID",
         "description": "",
         "parameters": [
           {
@@ -304,32 +300,14 @@
             "required": true,
             "schema": {
               "type": "string"
-            },
-            "description": "ID santri (MongoDB ObjectId)"
+            }
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
           "403": {
             "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
+        }
       },
       "put": {
         "tags": [
@@ -555,6 +533,74 @@
           }
         ]
       }
+    },
+    "/sekolah": {
+      "get": {
+        "tags": [
+          "Sekolah"
+        ],
+        "summary": "Ambil semua sekolah",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Sekolah"
+        ],
+        "summary": "Buat Sekolah baru ",
+        "description": "",
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nama": {
+                    "type": "string",
+                    "example": "Mts Yppa"
+                  },
+                  "jenjang": {
+                    "type": "string",
+                    "example": "SMP/MTs"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -687,13 +733,17 @@
                   }
                 }
               },
-              "sekolah": {
+              "sekolahId": {
                 "type": "string",
-                "example": "SMP Negeri 1 Bandung"
+                "example": "6a70b8c24a9e37be1b9ee041"
               },
               "kamarId": {
                 "type": "string",
                 "example": "6a70b8c24a9e37be1b9ee040"
+              },
+              "laundry": {
+                "type": "boolean",
+                "example": false
               }
             }
           }
@@ -702,6 +752,10 @@
       "CreateSantriRequest": {
         "type": "object",
         "properties": {
+          "nik": {
+            "type": "string",
+            "example": "3201012345678900"
+          },
           "nis": {
             "type": "string",
             "example": "12345"
@@ -709,6 +763,10 @@
           "namaLengkap": {
             "type": "string",
             "example": "Ahmad Fauzi"
+          },
+          "jenisKelamin": {
+            "type": "string",
+            "example": "L"
           },
           "tempatLahir": {
             "type": "string",
@@ -718,6 +776,10 @@
             "type": "string",
             "example": "2010-05-14"
           },
+          "fotoUrl": {
+            "type": "string",
+            "example": "https://example.com/foto.jpg"
+          },
           "anakKe": {
             "type": "number",
             "example": 1
@@ -726,17 +788,50 @@
             "type": "number",
             "example": 2
           },
-          "asalPesantren": {
+          "noHp": {
             "type": "string",
-            "example": ""
+            "example": "081234567890"
+          },
+          "noKk": {
+            "type": "string",
+            "example": "3201012345678911"
+          },
+          "namaKepalaKeluarga": {
+            "type": "string",
+            "example": "Bapak Fauzi"
           },
           "pendidikanTerakhir": {
-            "type": "string",
-            "example": "SD"
+            "type": "object",
+            "properties": {
+              "jenjangTerakhir": {
+                "type": "string",
+                "example": "SD"
+              },
+              "namaSekolah": {
+                "type": "string",
+                "example": "SDN 1 Bandung"
+              },
+              "tahunMasuk": {
+                "type": "string",
+                "example": "2016"
+              },
+              "tahunLulus": {
+                "type": "string",
+                "example": "2022"
+              }
+            }
           },
           "ayah": {
             "type": "object",
             "properties": {
+              "nik": {
+                "type": "string",
+                "example": "3201011111111111"
+              },
+              "statusHidup": {
+                "type": "string",
+                "example": "Hidup"
+              },
               "nama": {
                 "type": "string",
                 "example": "Bapak Fauzi"
@@ -748,12 +843,24 @@
               "pekerjaan": {
                 "type": "string",
                 "example": "Wiraswasta"
+              },
+              "noHp": {
+                "type": "string",
+                "example": "08111222333"
               }
             }
           },
           "ibu": {
             "type": "object",
             "properties": {
+              "nik": {
+                "type": "string",
+                "example": "3201012222222222"
+              },
+              "statusHidup": {
+                "type": "string",
+                "example": "Hidup"
+              },
               "nama": {
                 "type": "string",
                 "example": "Ibu Fauzi"
@@ -765,6 +872,10 @@
               "pekerjaan": {
                 "type": "string",
                 "example": "Ibu Rumah Tangga"
+              },
+              "noHp": {
+                "type": "string",
+                "example": "08222333444"
               }
             }
           },
@@ -779,35 +890,55 @@
                 "type": "string",
                 "example": "01/02"
               },
+              "kodeDesaKelurahan": {
+                "type": "string",
+                "example": "3273011001"
+              },
               "desaKelurahan": {
                 "type": "string",
                 "example": "Sukamaju"
+              },
+              "kodeKecamatan": {
+                "type": "string",
+                "example": "327301"
               },
               "kecamatan": {
                 "type": "string",
                 "example": "Cibeunying"
               },
+              "kodeKabupatenKota": {
+                "type": "string",
+                "example": "3273"
+              },
               "kabupatenKota": {
                 "type": "string",
                 "example": "Bandung"
+              },
+              "kodeProvinsi": {
+                "type": "string",
+                "example": "32"
               },
               "provinsi": {
                 "type": "string",
                 "example": "Jawa Barat"
               },
-              "noTelepon": {
+              "kodePos": {
                 "type": "string",
-                "example": "081234567890"
+                "example": "40111"
               }
             }
           },
-          "sekolah": {
+          "sekolahId": {
             "type": "string",
-            "example": "SMP Negeri 1 Bandung"
+            "example": "6a70b8c24a9e37be1b9ee041"
           },
           "kamarId": {
             "type": "string",
             "example": "6a70b8c24a9e37be1b9ee040"
+          },
+          "laundry": {
+            "type": "boolean",
+            "example": false
           }
         }
       }

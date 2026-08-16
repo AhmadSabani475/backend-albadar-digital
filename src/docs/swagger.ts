@@ -58,40 +58,62 @@ const doc = {
                         provinsi: "Jawa Barat",
                         noTelepon: "081234567890"
                     },
-                    sekolah: "SMP Negeri 1 Bandung",
-                    kamarId: "6a70b8c24a9e37be1b9ee040"
+                    sekolahId: "6a70b8c24a9e37be1b9ee041",
+                    kamarId: "6a70b8c24a9e37be1b9ee040",
+                    laundry: false
                 }
             },
             CreateSantriRequest: {
+                nik: "3201012345678900",
                 nis: "12345",
                 namaLengkap: "Ahmad Fauzi",
+                jenisKelamin: "L",
                 tempatLahir: "Bandung",
                 tanggalLahir: "2010-05-14",
+                fotoUrl: "https://example.com/foto.jpg",
                 anakKe: 1,
                 jumlahSaudara: 2,
-                asalPesantren: "",
-                pendidikanTerakhir: "SD",
+                noHp: "081234567890",
+                noKk: "3201012345678911",
+                namaKepalaKeluarga: "Bapak Fauzi",
+                pendidikanTerakhir: {
+                    jenjangTerakhir: "SD",
+                    namaSekolah: "SDN 1 Bandung",
+                    tahunMasuk: "2016",
+                    tahunLulus: "2022"
+                },
                 ayah: {
+                    nik: "3201011111111111",
+                    statusHidup: "Hidup",
                     nama: "Bapak Fauzi",
                     pendidikan: "S1",
-                    pekerjaan: "Wiraswasta"
+                    pekerjaan: "Wiraswasta",
+                    noHp: "08111222333"
                 },
                 ibu: {
+                    nik: "3201012222222222",
+                    statusHidup: "Hidup",
                     nama: "Ibu Fauzi",
                     pendidikan: "SMA",
-                    pekerjaan: "Ibu Rumah Tangga"
+                    pekerjaan: "Ibu Rumah Tangga",
+                    noHp: "08222333444"
                 },
                 alamat: {
                     jalan: "Jl. Merdeka No. 10",
                     rtRw: "01/02",
+                    kodeDesaKelurahan: "3273011001",
                     desaKelurahan: "Sukamaju",
+                    kodeKecamatan: "327301",
                     kecamatan: "Cibeunying",
+                    kodeKabupatenKota: "3273",
                     kabupatenKota: "Bandung",
+                    kodeProvinsi: "32",
                     provinsi: "Jawa Barat",
-                    noTelepon: "081234567890"
+                    kodePos: "40111"
                 },
-                sekolah: "SMP Negeri 1 Bandung",
-                kamarId: "6a70b8c24a9e37be1b9ee040"
+                sekolahId: "6a70b8c24a9e37be1b9ee041",
+                kamarId: "6a70b8c24a9e37be1b9ee040",
+                laundry: false
             }
         }
     }
@@ -99,6 +121,5 @@ const doc = {
 
 const outputFile = "./swagger_output.json";
 const endpointsFiles = ["../routes/api.ts"];
-
 
 swaggerAutogen({ openapi: "3.0.0" })(outputFile, endpointsFiles, doc);

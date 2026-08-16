@@ -23,7 +23,7 @@ function generateDefaultPassword(username: string): string {
     return `${username}${randomDigits}`;
 }
 export default {
-    async createUser(req: Request, res: Response) {
+    async create(req: Request, res: Response) {
         /**
           #swagger.tags = ['Users']
           #swagger.summary = 'Buat akun pengurus baru (khusus admin)'
@@ -102,7 +102,7 @@ export default {
             })
         }
     },
-    async getAllUsers(req: Request, res: Response) {
+    async findAllUsers(req: Request, res: Response) {
         /**
     #swagger.tags = ['Users']
     #swagger.summary = 'Ambil semua data user (khusus admin)'
@@ -122,7 +122,7 @@ export default {
             })
         }
     },
-    async deleteUserById(req: Request, res: Response) {
+    async deleteById(req: Request, res: Response) {
         /**
     #swagger.tags = ['Users']
     #swagger.summary = 'Hapus User'

@@ -4,43 +4,65 @@ import { Santri } from "../types/Santri";
 import * as Yup from "yup";
 import { Request, Response } from "express";
 import { Types } from "mongoose";
+import SekolahModel from "../models/sekolah.models";
 
 
 
 const orangtuaValidateSchema = Yup.object({
+    nik: Yup.string().optional(),
+    statusHidup: Yup.string().oneOf(['Hidup', 'Meninggal']).optional(),
     nama: Yup.string().required("Nama wajib diisi"),
     pendidikan: Yup.string().optional(),
     pekerjaan: Yup.string().optional(),
+    noHp: Yup.string().optional(),
 });
 
 const alamatValidateSchema = Yup.object({
     jalan: Yup.string().required("Jalan wajib diisi"),
     rtRw: Yup.string().optional(),
+    kodeDesaKelurahan: Yup.string().required("Kode desa/kelurahan wajib diisi"),
     desaKelurahan: Yup.string().required("Desa/Kelurahan wajib diisi"),
+    kodeKecamatan: Yup.string().required("Kode kecamatan wajib diisi"),
     kecamatan: Yup.string().required("Kecamatan wajib diisi"),
+    kodeKabupatenKota: Yup.string().required("Kode kabupaten/kota wajib diisi"),
     kabupatenKota: Yup.string().required("Kabupaten/Kota wajib diisi"),
+    kodeProvinsi: Yup.string().required("Kode provinsi wajib diisi"),
     provinsi: Yup.string().required("Provinsi wajib diisi"),
-    noTelepon: Yup.string().optional(),
+    kodePos: Yup.string().optional(),
+});
+
+const pendidikanSebelumnyaValidateSchema = Yup.object({
+    jenjangTerakhir: Yup.string().required("Jenjang pendidikan terakhir wajib diisi"),
+    namaSekolah: Yup.string().required("Nama sekolah terakhir wajib diisi"),
+    tahunMasuk: Yup.string().required("Tahun masuk wajib diisi"),
+    tahunLulus: Yup.string().required("Tahun lulus wajib diisi"),
 });
 
 const santriValidateSchema = Yup.object({
+    nik: Yup.string().optional(),
     nis: Yup.string().optional(),
     namaLengkap: Yup.string().required("Nama lengkap wajib diisi"),
+    jenisKelamin: Yup.string().oneOf(['L', 'P'], "Jenis kelamin harus L atau P").required("Jenis kelamin wajib diisi"),
     tempatLahir: Yup.string().required("Tempat lahir wajib diisi"),
     tanggalLahir: Yup.date().required("Tanggal lahir wajib diisi"),
+    fotoUrl: Yup.string().optional(),
     anakKe: Yup.number().optional(),
     jumlahSaudara: Yup.number().optional(),
-    asalPesantren: Yup.string().optional(),
-    pendidikanTerakhir: Yup.string().required("Pendidikan terakhir wajib diisi"),
+    noHp: Yup.string().optional(),
+    noKk: Yup.string().optional(),
+    namaKepalaKeluarga: Yup.string().optional(),
+    pendidikanTerakhir: pendidikanSebelumnyaValidateSchema.required("Data pendidikan sebelumnya wajib diisi"),
     ayah: orangtuaValidateSchema.required("Data ayah wajib diisi"),
     ibu: orangtuaValidateSchema.required("Data ibu wajib diisi"),
     alamat: alamatValidateSchema.required("Alamat wajib diisi"),
-    sekolah: Yup.string().required("Sekolah wajib diisi"),
+    sekolahId: Yup.string().required("Sekolah wajib dipilih"),
     kamarId: Yup.string().required("Kamar wajib dipilih"),
+    laundry: Yup.boolean().optional(),
 })
 
+
 export default {
-    async createSantri(req: Request, res: Response) {
+    async create(req: Request, res: Response) {
         /**
       #swagger.tags = ['Santri']
       #swagger.summary = 'Tambah santri manual (khusus admin)'
@@ -55,13 +77,20 @@ export default {
          }
       }
      */
-        const santri = req.body as unknown as Omit<Santri, 'status' | 'santriExist '>;
+        const santri = req.body as unknown as Omit<Santri, 'status' | 'tanggalTerdaftar'>;
         try {
             await santriValidateSchema.validate(santri);
             const kamar = await KamarModels.findById(santri.kamarId);
             if (!kamar) {
                 return res.status(404).json({
                     message: "Kamar tidak ditemukan",
+                    data: null
+                })
+            }
+            const sekolah = await SekolahModel.findById(santri.sekolahId);
+            if (!sekolah) {
+                return res.status(404).json({
+                    message: "Sekolah tidak ditemukan",
                     data: null
                 })
             }
@@ -75,6 +104,7 @@ export default {
             }
             const santriBaru = await SantriModels.create({
                 ...santri,
+                laundry: santri.laundry ?? false,
                 tanggalTerdaftar: new Date(),
                 status: 'aktif'
             })
@@ -90,7 +120,7 @@ export default {
             })
         }
     },
-    async santriFindAll(req: Request, res: Response) {
+    async findAll(req: Request, res: Response) {
         /**
 #swagger.tags = ['Santri']
 #swagger.summary = 'Ambil semua data Santri (khusus admin)'
@@ -100,7 +130,7 @@ export default {
             const result = await SantriModels.find().populate({
                 path: 'kamarId',
                 populate: 'asramaId'
-            });
+            }).populate('sekolahId');
             res.status(200).json({
                 message: 'Data Santri Berhasil diambil',
                 data: result
@@ -113,7 +143,7 @@ export default {
             })
         }
     },
-    async getSantriById(req: Request, res: Response) {
+    async findById(req: Request, res: Response) {
         /**
          #swagger.tags = ['Santri']
          #swagger.summary = 'Ambil data santri berdasarkan ID'
@@ -134,7 +164,11 @@ export default {
                     success: false
                 })
             }
-            const santri = await SantriModels.findById(id);
+            const santri = await SantriModels.findById(id).populate({
+                path: 'kamarId',
+                populate: 'asramaId'
+            }).populate('sekolahId');
+
             if (!santri) {
                 return res.status(404).json({
                     message: "ID Santri Tidak ditemukan",
@@ -152,7 +186,7 @@ export default {
             });
         }
     },
-    async editSantriById(req: Request, res: Response) {
+    async editById(req: Request, res: Response) {
         /**
     #swagger.tags = ['Santri']
     #swagger.summary = 'Edit data santri berdasarkan ID (khusus admin)'
@@ -207,6 +241,15 @@ export default {
                     })
                 }
             }
+            if (santri.sekolahId && santri.sekolahId.toString() !== santriExist.sekolahId?.toString()) {
+                const sekolah = await SekolahModel.findById(santri.sekolahId);
+                if (!sekolah) {
+                    return res.status(404).json({
+                        message: "Sekolah tidak ditemukan",
+                        data: null
+                    });
+                }
+            }
 
             const santriUpdated = await SantriModels.findByIdAndUpdate(
                 id,
@@ -226,7 +269,7 @@ export default {
             })
         }
     },
-    async deleteSantriById(req: Request, res: Response) {
+    async deleteById(req: Request, res: Response) {
         /**
    #swagger.tags = ['Santri']
    #swagger.summary = 'Hapus data santri berdasarkan ID (khusus admin)'
