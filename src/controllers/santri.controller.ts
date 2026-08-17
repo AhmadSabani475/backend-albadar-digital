@@ -145,17 +145,16 @@ export default {
     },
     async findById(req: Request, res: Response) {
         /**
-         #swagger.tags = ['Santri']
-         #swagger.summary = 'Ambil data santri berdasarkan ID'
-         #swagger.security = [{ "bearerAuth": [] }]
-          #swagger.parameters['id'] = {
-     in: 'path',
-     required: true,
-     type: 'string',
-     description: 'ID santri (MongoDB ObjectId)'
- }
-
-         */
+   #swagger.tags = ['Santri']
+   #swagger.summary = 'Ambil data santri berdasarkan ID'
+   #swagger.security = [{ "bearerAuth": [] }]
+   #swagger.parameters['id'] = {
+       in: 'path',
+       required: true,
+       type: 'string',
+       description: 'ID santri (MongoDB ObjectId)'
+   }
+        */
         try {
             const { id } = req.params;
             if (!Types.ObjectId.isValid(id)) {

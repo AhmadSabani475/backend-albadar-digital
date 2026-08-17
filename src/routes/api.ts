@@ -19,7 +19,7 @@ router.put('/auth/set-password', authMiddleware, authController.setPassword);
 
 router.post('/santri', authMiddleware, checkRole(['admin']), santriController.create);
 router.get('/santri', authMiddleware, checkRole(['admin']), santriController.findAll);
-router.get('/santri/:id', authMiddleware, santriController.findById);
+router.get('/santri/:id', authMiddleware, checkRole(['admin']), santriController.findById);
 router.put('/santri/:id', authMiddleware, checkRole(['admin']), santriController.editById)
 router.delete('/santri/:id', authMiddleware, checkRole(['admin']), santriController.deleteById)
 
@@ -30,6 +30,6 @@ router.post('/kamar', authMiddleware, checkRole(['admin']), kamarController.crea
 router.get('/kamar', authMiddleware, kamarController.findAll);
 
 router.get('/sekolah', authMiddleware, sekolahController.findAll);
-router.post('/sekolah', authMiddleware,checkRole(['admin']), sekolahController.create);
+router.post('/sekolah', authMiddleware, checkRole(['admin']), sekolahController.create);
 
 export default router;
