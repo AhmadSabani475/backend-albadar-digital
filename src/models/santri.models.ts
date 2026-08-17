@@ -1,6 +1,5 @@
 import Mongoose from "mongoose";
 import { Alamat, Orangtua, PendidikanSebelumnya, Santri } from "../types/Santri";
-import { Sekolah } from "../types/Sekolah";
 
 const Schema = Mongoose.Schema;
 

@@ -7,6 +7,11 @@ import asramaController from "../controllers/asrama.controller";
 import usersController from "../controllers/users.controller";
 import santriController from "../controllers/santri.controller";
 import sekolahController from "../controllers/sekolah.controller";
+import tahunajaranController from "../controllers/tahunajaran.controller";
+import tingkatkelasController from "../controllers/tingkatkelas.controller";
+import tingkatngajiController from "../controllers/tingkatngaji.controller";
+import kelassantriController from "../controllers/kelassantri.controller";
+import riwayatkelasngajiController from "../controllers/riwayatkelasngaji.controller";
 
 const router = express.Router();
 router.get('/users', authMiddleware, checkRole(['admin']), usersController.findAllUsers);
@@ -31,5 +36,35 @@ router.get('/kamar', authMiddleware, kamarController.findAll);
 
 router.get('/sekolah', authMiddleware, sekolahController.findAll);
 router.post('/sekolah', authMiddleware, checkRole(['admin']), sekolahController.create);
+
+
+router.post('/tahun-ajaran', authMiddleware, checkRole(['admin']), tahunajaranController.create);
+router.get('/tahun-ajaran', authMiddleware, tahunajaranController.findAll);
+router.get('/tahun-ajaran/:id', authMiddleware, tahunajaranController.findById);
+router.put('/tahun-ajaran/:id', authMiddleware, checkRole(['admin']), tahunajaranController.update);
+router.delete('/tahun-ajaran/:id', authMiddleware, checkRole(['admin']), tahunajaranController.delete);
+
+router.post('/tingkat-kelas', authMiddleware, checkRole(['admin']), tingkatkelasController.create);
+router.get('/tingkat-kelas', authMiddleware, tingkatkelasController.findAll);
+router.get('/tingkat-kelas/:id', authMiddleware, tingkatkelasController.findById);
+router.put('/tingkat-kelas/:id', authMiddleware, checkRole(['admin']), tingkatkelasController.update);
+router.delete('/tingkat-kelas/:id', authMiddleware, checkRole(['admin']), tingkatkelasController.delete);
+
+router.post('/tingkat-ngaji', authMiddleware, checkRole(['admin']), tingkatngajiController.create);
+router.get('/tingkat-ngaji', authMiddleware, tingkatngajiController.findAll);
+router.get('/tingkat-ngaji/:id', authMiddleware, tingkatngajiController.findById);
+router.put('/tingkat-ngaji/:id', authMiddleware, checkRole(['admin']), tingkatngajiController.update);
+router.delete('/tingkat-ngaji/:id', authMiddleware, checkRole(['admin']), tingkatngajiController.delete);
+
+router.post('/kelas-santri', authMiddleware, checkRole(['admin']), kelassantriController.create);
+router.get('/kelas-santri', authMiddleware, kelassantriController.findAll);
+router.delete('/kelas-santri/:id', authMiddleware, checkRole(['admin']), kelassantriController.delete);
+router.post('/kelas-santri/naik-kelas', authMiddleware, checkRole(['admin']), kelassantriController.naikKelas);
+
+router.post('/riwayat-kelas-ngaji', authMiddleware, checkRole(['admin']), riwayatkelasngajiController.create);
+router.get('/riwayat-kelas-ngaji', authMiddleware, riwayatkelasngajiController.findAll);
+router.put('/riwayat-kelas-ngaji/:id', authMiddleware, checkRole(['admin']), riwayatkelasngajiController.update);
+router.delete('/riwayat-kelas-ngaji/:id', authMiddleware, checkRole(['admin']), riwayatkelasngajiController.delete);
+router.post('/riwayat-kelas-ngaji/naik-kelas', authMiddleware, checkRole(['admin']), riwayatkelasngajiController.naikKelasNgaji);
 
 export default router;
