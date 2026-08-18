@@ -12,6 +12,7 @@ import tingkatkelasController from "../controllers/tingkatkelas.controller";
 import tingkatngajiController from "../controllers/tingkatngaji.controller";
 import kelassantriController from "../controllers/kelassantri.controller";
 import riwayatkelasngajiController from "../controllers/riwayatkelasngaji.controller";
+import wilayahController from "../controllers/wilayah.controller";
 
 const router = express.Router();
 router.get('/users', authMiddleware, checkRole(['admin']), usersController.findAllUsers);
@@ -66,5 +67,10 @@ router.get('/riwayat-kelas-ngaji', authMiddleware, riwayatkelasngajiController.f
 router.put('/riwayat-kelas-ngaji/:id', authMiddleware, checkRole(['admin']), riwayatkelasngajiController.update);
 router.delete('/riwayat-kelas-ngaji/:id', authMiddleware, checkRole(['admin']), riwayatkelasngajiController.delete);
 router.post('/riwayat-kelas-ngaji/naik-kelas', authMiddleware, checkRole(['admin']), riwayatkelasngajiController.naikKelasNgaji);
+
+router.get('/wilayah/provinces', authMiddleware, wilayahController.getProvinces);
+router.get('/wilayah/regencies/:provinceId', authMiddleware, wilayahController.getRegencies);
+router.get('/wilayah/districts/:regencyId', authMiddleware, wilayahController.getDistricts);
+router.get('/wilayah/villages/:districtId', authMiddleware, wilayahController.getVillages);
 
 export default router;
