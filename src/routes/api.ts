@@ -13,6 +13,7 @@ import tingkatngajiController from "../controllers/tingkatngaji.controller";
 import kelassantriController from "../controllers/kelassantri.controller";
 import riwayatkelasngajiController from "../controllers/riwayatkelasngaji.controller";
 import wilayahController from "../controllers/wilayah.controller";
+import jenisTagihanController from "../controllers/jenisTagihan.controller";
 
 const router = express.Router();
 router.get('/users', authMiddleware, checkRole(['admin']), usersController.findAllUsers);
@@ -72,5 +73,11 @@ router.get('/wilayah/provinces', authMiddleware, wilayahController.getProvinces)
 router.get('/wilayah/regencies/:provinceId', authMiddleware, wilayahController.getRegencies);
 router.get('/wilayah/districts/:regencyId', authMiddleware, wilayahController.getDistricts);
 router.get('/wilayah/villages/:districtId', authMiddleware, wilayahController.getVillages);
+
+router.get('/jenis-tagihan', authMiddleware, checkRole(['admin']), jenisTagihanController.findAll);
+router.post('/jenis-tagihan', authMiddleware, checkRole(['admin']), jenisTagihanController.create);
+router.get('/jenis-tagihan/:id', authMiddleware, checkRole(['admin']), jenisTagihanController.findById);
+router.delete('/jenis-tagihan/:id', authMiddleware, checkRole(['admin']), jenisTagihanController.deleteById);
+router.put('/jenis-tagihan/:id', authMiddleware, checkRole(['admin']), jenisTagihanController.editById);
 
 export default router;
