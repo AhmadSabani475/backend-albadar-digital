@@ -15,6 +15,7 @@ import riwayatkelasngajiController from "../controllers/riwayatkelasngaji.contro
 import wilayahController from "../controllers/wilayah.controller";
 import jenisTagihanController from "../controllers/jenisTagihan.controller";
 import tarifKhususController from "../controllers/tarifKhusus.controller";
+import tagihanController from "../controllers/tagihan.controller";
 
 const router = express.Router();
 router.get('/users', authMiddleware, checkRole(['admin']), usersController.findAllUsers);
@@ -85,4 +86,7 @@ router.get('/tarif-khusus', authMiddleware, checkRole(['admin']), tarifKhususCon
 router.post('/tarif-khusus', authMiddleware, checkRole(['admin']), tarifKhususController.create);
 router.delete('/tarif-khusus/:id', authMiddleware, checkRole(['admin']), tarifKhususController.deleteById);
 
+router.post('/tagihan/generate-bulk', authMiddleware, checkRole(['admin']), tagihanController.createBulk);
+router.get('/tagihan', authMiddleware, checkRole(['admin']), tagihanController.findAll);
+router.post('/tagihan', authMiddleware, checkRole(['admin']), tagihanController.create);
 export default router;
