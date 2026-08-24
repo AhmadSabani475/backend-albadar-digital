@@ -85,7 +85,6 @@ export default {
                 return res.status(404).json({ message: "Jenis Tagihan Tidak Ditemukan", data: null });
             }
 
-            // Tentukan daftar santri yang jadi target
             const santriFilter: Record<string, unknown> = { status: 'aktif' };
             if (target === 'custom' && Array.isArray(santriIds) && santriIds.length > 0) {
                 santriFilter._id = { $in: santriIds };
@@ -100,7 +99,6 @@ export default {
             const dilewati: { santriId: string; nama: string; alasan: string }[] = [];
 
             for (const santri of santriList) {
-                // Cek udah ada tagihan periode ini belum (hindari duplicate)
                 const sudahAda = await TagihanModel.findOne({
                     santriId: santri._id,
                     jenisTagihanId,

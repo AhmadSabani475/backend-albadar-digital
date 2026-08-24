@@ -11,7 +11,7 @@ export interface Tagihan {
     santriId: Types.ObjectId;
     jenisTagihanId: Types.ObjectId;
     periode: string;
-    nominalTagihan: Number;
+    nominalTagihan: number;
     jatuhTempo: Date;
     status: string;
     sumberNominal: string;
