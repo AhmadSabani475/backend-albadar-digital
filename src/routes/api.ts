@@ -90,6 +90,7 @@ router.delete('/tarif-khusus/:id', authMiddleware, checkRole(['admin']), tarifKh
 router.post('/tagihan/generate-bulk', authMiddleware, checkRole(['admin']), tagihanController.createBulk);
 router.get('/tagihan', authMiddleware, checkRole(['admin']), tagihanController.findAll);
 router.post('/tagihan', authMiddleware, checkRole(['admin']), tagihanController.create);
+router.get('/tagihan/:id', authMiddleware, checkRole(['admin']), tagihanController.findById);
 
 router.get('/pembayaran', authMiddleware, checkRole(['admin']), pembayaranController.findAll);
 router.post('/pembayaran', authMiddleware, checkRole(['admin']), pembayaranController.create);
