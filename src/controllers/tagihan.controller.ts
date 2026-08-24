@@ -4,6 +4,7 @@ import TarifKhususModel from "../models/tarifKhusus.models";
 import TagihanModel from "../models/tagihan.models";
 import JenisTagihanModel from "../models/jenisTagihan.models";
 import SantriModels from "../models/santri.models";
+import { Types } from "mongoose";
 
 const TagihanValidateSchema = Yup.object({
     santriId: Yup.string().required("Santri wajib dipilih"),
@@ -133,6 +134,30 @@ export default {
                 message: `Berhasil generate ${berhasil.length} tagihan, ${dilewati.length} dilewati`,
                 data: { berhasil, dilewati }
             });
+        } catch (error) {
+            const err = error as unknown as Error;
+            return res.status(400).json({ message: err.message, data: null });
+        }
+    },
+    async findById(req: Request, res: Response) {
+        try {
+            const { id } = req.params;
+            if (!Types.ObjectId.isValid(id)) {
+                return res.status(400).json({ message: "ID Not Valid", data: null })
+            }
+
+            const tagihan = await TagihanModel.findById(id)
+                .populate('santriId')
+                .populate('jenisTagihanId');
+
+            if (!tagihan) {
+                return res.status(404).json({ message: "Tagihan Tidak Ditemukan", data: null })
+            }
+
+            return res.status(200).json({
+                message: "Data Tagihan Berhasil Diambil",
+                data: tagihan
+            })
         } catch (error) {
             const err = error as unknown as Error;
             return res.status(400).json({ message: err.message, data: null });
