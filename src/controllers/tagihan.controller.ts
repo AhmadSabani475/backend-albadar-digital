@@ -147,7 +147,13 @@ export default {
             }
 
             const tagihan = await TagihanModel.findById(id)
-                .populate('santriId')
+                .populate({
+                    path: 'santriId',
+                    populate: {
+                        path: 'kamarId',
+                        populate: 'asramaId'
+                    }
+                })
                 .populate('jenisTagihanId');
 
             if (!tagihan) {
