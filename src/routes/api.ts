@@ -18,6 +18,8 @@ import tarifKhususController from "../controllers/tarifKhusus.controller";
 import tagihanController from "../controllers/tagihan.controller";
 import pembayaranController from "../controllers/pembayaran.controller";
 import rekeningController from "../controllers/rekening.controller";
+import mutasiRekeningController from "../controllers/mutasiRekening.controller";
+import uangJajanController from "../controllers/uangJajan.controller";
 
 const router = express.Router();
 router.get('/users', authMiddleware, checkRole(['admin']), usersController.findAllUsers);
@@ -97,6 +99,13 @@ router.get('/pembayaran', authMiddleware, checkRole(['admin']), pembayaranContro
 router.post('/pembayaran', authMiddleware, checkRole(['admin']), pembayaranController.create);
 
 router.get('/rekening', authMiddleware, checkRole(['admin']), rekeningController.findAll);
+router.get('/rekening/:id', authMiddleware, checkRole(['admin']), rekeningController.findById);
 router.post('/rekening', authMiddleware, checkRole(['admin']), rekeningController.create);
+
+router.post('/rekening/mutasi', authMiddleware, checkRole(['admin']), mutasiRekeningController.create);
+router.get('/rekening/:id/mutasi', authMiddleware, checkRole(['admin']), mutasiRekeningController.findMutasiById);
+
+router.get('/rekening/uang-jajan/hari-ini', authMiddleware, checkRole(['admin']), uangJajanController.getStatusHariIni);
+router.post('/rekening/uang-jajan/bagikan', authMiddleware, checkRole(['admin']), uangJajanController.bagikan);
 
 export default router;
