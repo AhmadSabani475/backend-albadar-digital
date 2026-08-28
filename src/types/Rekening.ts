@@ -1,7 +1,7 @@
-import { Types } from "mongoose"
+import { Santri } from "./Santri";
 
 export interface Rekening {
-    santriId: Types.ObjectId;
+    santriId: Santri;
     jenisRekening: 'uang_jajan' | 'tabungan_ziarah';
     saldo: number;
     nominalHarian?: number;
