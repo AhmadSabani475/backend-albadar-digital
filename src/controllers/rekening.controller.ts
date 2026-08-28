@@ -62,8 +62,15 @@ export default {
                     data: null
                 })
             }
-
-            const result = await RekeningModel.findById(id).populate('santriId');
+            const result = await RekeningModel.findById(id).populate({
+                path: 'santriId',
+                populate: [
+                    {
+                        path: 'kamarId',
+                        populate: 'asramaId' 
+                    },
+                ]
+            });
             if (!result) {
                 return res.status(404).json({
                     message: 'Rekening Tidak ditemukan',
