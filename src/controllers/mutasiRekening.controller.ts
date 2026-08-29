@@ -4,6 +4,7 @@ import { IReqUser } from "../middleware/auth.middleware";
 import MutasiRekeningModel from "../models/mutasi.models";
 import RekeningModel from "../models/rekening.models";
 import { Types } from "mongoose";
+import { prosesMutasi } from "../services/mutasiRekening.service";
 
 const MutasiRekeningValidateSchema = Yup.object({
     rekeningId: Yup.string().required(),
@@ -17,34 +18,13 @@ export default {
     async create(req: IReqUser, res: Response) {
         try {
             const request = await MutasiRekeningValidateSchema.validate(req.body);
+            const dicatatOleh = req.user?.id ? new Types.ObjectId(req.user.id) : undefined;
 
-            const rekening = await RekeningModel.findById(request.rekeningId);
-            if (!rekening) {
-                return res.status(404).json({ message: 'Rekening tidak ditemukan', data: null });
-            }
-
-            if (request.jenis === 'tarik') {
-                if (rekening.saldo < request.nominal) {
-                    return res.status(400).json({ message: 'Saldo tidak cukup', data: null });
-                }
-                rekening.saldo -= request.nominal;
-            } else {
-                rekening.saldo += request.nominal;
-            }
-
-            const dicatatOleh = req.user?.id;
-
-            const result = await MutasiRekeningModel.create({
-                ...request,
-                tanggal: new Date(),
-                dicatatOleh,
-            });
-
-            await rekening.save();
+            const hasil = await prosesMutasi({ ...request, dicatatOleh });
 
             return res.status(201).json({
                 message: 'Data berhasil ditambahkan',
-                data: result
+                data: hasil
             });
         } catch (error) {
             const err = error as Error;
