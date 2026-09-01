@@ -1,11 +1,14 @@
 import KwitansiModel from "../models/kwitansi.models";
 import { Request, Response } from "express";
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 import * as Yup from "yup";
 import { IReqUser } from "../middleware/auth.middleware";
 import { prosesPembayaran } from "../services/pembayaran.service";
 import { prosesMutasi } from "../services/mutasiRekening.service";
 import RekeningModel from "../models/rekening.models";
+import SantriModels from "../models/santri.models";
+import TagihanModel from "../models/tagihan.models";
+import PembayaranModel from "../models/pembayaran.models";
 
 async function generateNomorKwitansi(session?: mongoose.ClientSession): Promise<string> {
     const now = new Date();
@@ -20,7 +23,7 @@ async function generateNomorKwitansi(session?: mongoose.ClientSession): Promise<
     let urutanBerikutnya = 1;
 
     if (kwitansiTerakhirHariIni) {
-       
+
         const bagianTerakhir = kwitansiTerakhirHariIni.nomorKwitansi.split('-').pop();
         const urutanLama = parseInt(bagianTerakhir ?? '0', 10);
         urutanBerikutnya = urutanLama + 1;
@@ -142,4 +145,53 @@ export default {
             return res.status(400).json({ message: err.message, data: null });
         }
     },
+    async getRingkasanData(req: Request, res: Response) {
+        try {
+            const { id } = req.params;
+            if (!Types.ObjectId.isValid(id)) {
+                return res.status(401).json({
+                    message: 'ID Tidak Valid',
+                    data: null
+                })
+            }
+            const santri = await SantriModels.findById(id);
+            if (!santri) {
+                return res.status(404).json({
+                    message: 'Santri tidak ditemukan',
+                    data: null
+                })
+            }
+            const tagihan = await TagihanModel.find({ santriId: id, status: { $ne: 'lunas' } })
+                .populate('jenisTagihanId', 'nama');
+            const tagihanDenganSisa = await Promise.all(
+                tagihan.map(async (t) => {
+                    const semuaPembayaran = await PembayaranModel.find({ tagihanId: t._id });
+                    const totalTerbayar = semuaPembayaran.reduce((sum, p) => sum + p.nominalBayar, 0);
+                    const sisaTagihan = t.nominalTagihan - totalTerbayar;
+                    const cicilanKe = semuaPembayaran.length + 1;
+                    return {
+                        _id: t._id,
+                        namaTagihan: (t.jenisTagihanId as any)?.nama,
+                        nominalTagihan: t.nominalTagihan,
+                        sisaTagihan,
+                        cicilanKe,
+                        status: t.status,
+                    };
+                })
+            )
+
+            const rekening = await RekeningModel.find({ santriId: id });
+            return res.status(200).json({
+                message: 'Data berhasil diambil',
+                data: {
+                    santri,
+                    tagihan: tagihanDenganSisa,
+                    rekening,
+                }
+            })
+        } catch (error) {
+            const err = error as Error;
+            return res.status(400).json({ message: err.message, data: null });
+        }
+    }
 };

@@ -110,5 +110,5 @@ router.get('/rekening/uang-jajan/hari-ini', authMiddleware, checkRole(['admin'])
 router.post('/rekening/uang-jajan/bagikan', authMiddleware, checkRole(['admin']), uangJajanController.bagikan);
 
 router.post('/kasir/transaksi', authMiddleware, checkRole(['admin']), kasirController.prosesTransaksi);
-
+router.get('/kasir/:id/ringkasan', authMiddleware, checkRole(['admin']), kasirController.getRingkasanData);
 export default router;
