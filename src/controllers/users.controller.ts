@@ -135,7 +135,7 @@ export default {
    }
    */
         try {
-            const {id} = req.params;
+            const { id } = req.params;
             const user = await userModels.findByIdAndDelete(id);
             if (!user) {
                 return res.status(404).json({
@@ -146,6 +146,35 @@ export default {
             return res.status(200).json({
                 message: "User Deleted",
                 success: true
+            })
+        } catch (error) {
+            const err = error as unknown as Error;
+            res.status(400).json({
+                message: err.message,
+                success: false
+            })
+        }
+    },
+    async resetPasswordDefault(req: Request, res: Response) {
+        try {
+            const { id } = req.params;
+            const user = await userModels.findById(id);
+            if (!user) {
+                return res.status(404).json({
+                    message: 'user tidak ditemukan',
+                    data: null
+                })
+            }
+            const generatedPassword = generateDefaultPassword(user.username);
+            user.password = generatedPassword;
+            user.is_active = false;
+            await user.save();
+            return res.status(200).json({
+                message: 'password berhasil di reset',
+                data: {
+                    ...user.toJSON(),
+                    generatedPassword
+                }
             })
         } catch (error) {
             const err = error as unknown as Error;
