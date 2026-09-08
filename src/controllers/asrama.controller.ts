@@ -58,7 +58,7 @@ export default {
     async deleteById(req: Request, res: Response) {
         try {
             const { id } = req.params;
-            const result = await userModels.findByIdAndDelete(id);
+            const result = await asramaModels.findByIdAndDelete(id);
             return res.status(200).json({
                 message: 'Asrama Berhasil di Hapus',
                 data: result
