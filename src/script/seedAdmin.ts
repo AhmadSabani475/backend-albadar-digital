@@ -15,14 +15,14 @@ async function seedAdmin() {
         await mongoose.connect(MONGO_URI);
         console.log("Connected to DB");
 
-        const existing = await userModels.findOne({ username: "admin" });
+        const existing = await userModels.findOne({ username: "rizki" });
         if (existing) {
             console.log("Username 'admin' sudah ada, batal seeding.");
             process.exit(0);
         }
 
         const admin = await userModels.create({
-            username: "admin",
+            username: "rizki",
             password: "password123",
             role: "admin",
             is_active: true

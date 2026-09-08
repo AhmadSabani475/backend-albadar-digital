@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import * as Yup from "yup";
 import asramaModels from "../models/asrama.models";
+import userModels from "../models/user.model";
 
 const asramaValidateSchema = Yup.object({
     namaAsrama: Yup.string().required("Nama asrama wajib diisi"),
@@ -54,4 +55,17 @@ export default {
             res.status(500).json({ message: err.message, data: null });
         }
     },
+    async deleteById(req: Request, res: Response) {
+        try {
+            const { id } = req.params;
+            const result = await userModels.findByIdAndDelete(id);
+            return res.status(200).json({
+                message: 'Asrama Berhasil di Hapus',
+                data: result
+            })
+        } catch (error) {
+            const err = error as unknown as Error;
+            res.status(500).json({ message: err.message, data: null });
+        }
+    }
 }
