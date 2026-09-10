@@ -18,6 +18,7 @@ const KwitansiItemSchema = new Schema({
         type: Number,
         required: true
     },
+    label: { type: String, required: true },
     keterangan: {
         type: String
     }

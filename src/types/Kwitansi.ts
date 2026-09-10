@@ -5,6 +5,7 @@ export interface KwitansiItem {
     tipe: 'bayar_tagihan' | 'setor_rekening' | 'tarik_rekening';
     referensiId: string;
     nominal: number;
+    label: string;
     keterangan?: string;
 }
 

@@ -41,7 +41,7 @@ export async function prosesPembayaran(input: ProsesPembayaranInput, session?: C
         input.tagihanId,
         { status: statusBaru },
         { new: true, session }
-    );
+    ).populate('jenisTagihanId', 'nama');
 
     return { pembayaran: pembayaranBaru, totalTerbayar, tagihan: tagihanUpdated };
 }

@@ -23,7 +23,6 @@ async function generateNomorKwitansi(session?: mongoose.ClientSession): Promise<
     let urutanBerikutnya = 1;
 
     if (kwitansiTerakhirHariIni) {
-
         const bagianTerakhir = kwitansiTerakhirHariIni.nomorKwitansi.split('-').pop();
         const urutanLama = parseInt(bagianTerakhir ?? '0', 10);
         urutanBerikutnya = urutanLama + 1;
@@ -34,6 +33,11 @@ async function generateNomorKwitansi(session?: mongoose.ClientSession): Promise<
 
     return `KW-${tanggalFormatted}-${urutanPadded}`;
 }
+
+const labelJenisRekening: Record<string, string> = {
+    uang_jajan: 'Uang Jajan',
+    tabungan_ziarah: 'Ziarah',
+};
 
 const ItemSchema = Yup.object({
     tipe: Yup.string().oneOf(['bayar_tagihan', 'setor_rekening', 'tarik_rekening']).required(),
@@ -114,6 +118,7 @@ export default {
                     hasilItems.push({
                         tipe: 'bayar_tagihan',
                         referensiId: item.tagihanId,
+                        label: (hasil.tagihan?.jenisTagihanId as any)?.nama ?? 'Tagihan',
                         nominal: item.nominal,
                         keterangan: item.keterangan,
                     });
@@ -136,6 +141,7 @@ export default {
                     hasilItems.push({
                         tipe: item.tipe,
                         referensiId: item.rekeningId,
+                        label: labelJenisRekening[hasil.rekening.jenisRekening] ?? 'Rekening',
                         nominal: item.nominal,
                         keterangan: item.keterangan,
                     });
@@ -177,6 +183,7 @@ export default {
             return res.status(400).json({ message: err.message, data: null });
         }
     },
+
     async getRingkasanData(req: Request, res: Response) {
         /**
          #swagger.tags = ['Kasir']
@@ -192,8 +199,8 @@ export default {
         try {
             const { id } = req.params;
             if (!Types.ObjectId.isValid(id)) {
-                return res.status(401).json({
-                    message: 'ID Tidak Valid',
+                return res.status(400).json({
+                    message: 'ID tidak valid',
                     data: null
                 })
             }
@@ -237,6 +244,7 @@ export default {
             return res.status(400).json({ message: err.message, data: null });
         }
     },
+
     async getRiwayatBySantriId(req: Request, res: Response) {
         /**
          #swagger.tags = ['Kasir']
