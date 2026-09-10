@@ -57,6 +57,38 @@ const KasirTransaksiSchema = Yup.object({
 
 export default {
     async prosesTransaksi(req: IReqUser, res: Response) {
+        /**
+         #swagger.tags = ['Kasir']
+         #swagger.summary = 'Proses transaksi kasir (bayar tagihan + setor/tarik rekening)'
+         #swagger.description = 'Memproses satu atau lebih item transaksi dalam satu kwitansi. Mendukung bayar_tagihan, setor_rekening, dan tarik_rekening. Menggunakan MongoDB transaction.'
+         #swagger.security = [{ "bearerAuth": [] }]
+         #swagger.requestBody = {
+            required: true,
+            content: {
+                "application/json": {
+                    schema: {
+                        type: "object",
+                        properties: {
+                            santriId: { type: "string", example: "60f7a..." },
+                            items: {
+                                type: "array",
+                                items: {
+                                    type: "object",
+                                    properties: {
+                                        tipe: { type: "string", enum: ["bayar_tagihan", "setor_rekening", "tarik_rekening"] },
+                                        tagihanId: { type: "string" },
+                                        rekeningId: { type: "string" },
+                                        nominal: { type: "number", example: 500000 },
+                                        keterangan: { type: "string" }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+         }
+         */
         const session = await mongoose.startSession();
         session.startTransaction();
 
@@ -146,6 +178,17 @@ export default {
         }
     },
     async getRingkasanData(req: Request, res: Response) {
+        /**
+         #swagger.tags = ['Kasir']
+         #swagger.summary = 'Ambil ringkasan data santri untuk kasir (tagihan belum lunas + rekening)'
+         #swagger.security = [{ "bearerAuth": [] }]
+         #swagger.parameters['id'] = {
+             in: 'path',
+             required: true,
+             type: 'string',
+             description: 'ID santri (MongoDB ObjectId)'
+         }
+         */
         try {
             const { id } = req.params;
             if (!Types.ObjectId.isValid(id)) {
@@ -192,6 +235,80 @@ export default {
         } catch (error) {
             const err = error as Error;
             return res.status(400).json({ message: err.message, data: null });
+        }
+    },
+    async getRiwayatBySantriId(req: Request, res: Response) {
+        /**
+         #swagger.tags = ['Kasir']
+         #swagger.summary = 'Ambil riwayat kwitansi / transaksi (dapat difilter by santriId) beserta ringkasan pembayaran & tunggakan'
+         #swagger.security = [{ "bearerAuth": [] }]
+         #swagger.parameters['santriId'] = { in: 'query', type: 'string', description: 'Filter ID Santri (opsional)' }
+         #swagger.parameters['page'] = { in: 'query', type: 'number', default: 1 }
+         #swagger.parameters['limit'] = { in: 'query', type: 'number', default: 10 }
+         */
+        try {
+            const { santriId, page = 1, limit = 10 } = req.query;
+
+            if (santriId && !Types.ObjectId.isValid(santriId as string)) {
+                return res.status(400).json({
+                    message: 'santriId tidak valid',
+                    data: null
+                })
+            }
+
+            const filter: Record<string, unknown> = {};
+            if (santriId) filter.santriId = santriId;
+
+            const pageNum = Number(page);
+            const limitNum = Number(limit);
+            const skip = (pageNum - 1) * limitNum;
+
+            const [kwitansi, total, aggregateSudahBayar, tagihanBelumLunas] = await Promise.all([
+                KwitansiModel.find(filter)
+                    .populate('diCatatOleh', 'namaLengkap')
+                    .sort({ createdAt: -1 })
+                    .skip(skip)
+                    .limit(limitNum),
+                KwitansiModel.countDocuments(filter),
+                KwitansiModel.aggregate([
+                    { $match: filter },
+                    { $group: { _id: null, total: { $sum: '$totalNominal' } } }
+                ]),
+                TagihanModel.find(
+                    santriId ? { santriId, status: { $ne: 'lunas' } } : { status: { $ne: 'lunas' } }
+                )
+            ]);
+
+            const totalSudahBayar = aggregateSudahBayar[0]?.total || 0;
+
+            const totalTunggakan = (await Promise.all(
+                tagihanBelumLunas.map(async (t) => {
+                    const semuaPembayaran = await PembayaranModel.find({ tagihanId: t._id });
+                    const totalTerbayar = semuaPembayaran.reduce((sum, p) => sum + p.nominalBayar, 0);
+                    return Math.max(0, t.nominalTagihan - totalTerbayar);
+                })
+            )).reduce((sum, sisa) => sum + sisa, 0);
+
+            return res.status(200).json({
+                message: 'Data berhasil diambil',
+                data: kwitansi,
+                summary: {
+                    totalSudahBayar,
+                    totalTunggakan,
+                },
+                meta: {
+                    page: pageNum,
+                    limit: limitNum,
+                    total,
+                    totalPages: Math.ceil(total / limitNum),
+                },
+            })
+        } catch (error) {
+            const err = error as Error;
+            return res.status(500).json({
+                message: err.message,
+                data: null,
+            })
         }
     }
 };

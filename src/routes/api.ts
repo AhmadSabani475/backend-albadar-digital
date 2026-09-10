@@ -113,4 +113,5 @@ router.post('/rekening/uang-jajan/bagikan', authMiddleware, checkRole(['admin'])
 
 router.post('/kasir/transaksi', authMiddleware, checkRole(['admin']), kasirController.prosesTransaksi);
 router.get('/kasir/:id/ringkasan', authMiddleware, checkRole(['admin']), kasirController.getRingkasanData);
+router.get('/kwitansi', authMiddleware, checkRole(['admin']), kasirController.getRiwayatBySantriId);
 export default router;

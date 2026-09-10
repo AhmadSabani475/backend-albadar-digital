@@ -130,6 +130,45 @@
         ]
       }
     },
+    "/users/{id}/reset-password-default": {
+      "put": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Reset password user ke password default",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID User"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
     "/auth/login": {
       "post": {
         "tags": [
@@ -444,6 +483,42 @@
         ],
         "summary": "Ambil semua data asrama",
         "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/asrama/{id}": {
+      "delete": {
+        "tags": [
+          "Asrama"
+        ],
+        "summary": "Hapus data asrama",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID Asrama"
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -970,6 +1045,10 @@
     },
     "/tingkat-ngaji": {
       "post": {
+        "tags": [
+          "TingkatNgaji"
+        ],
+        "summary": "Tambah tingkat ngaji baru",
         "description": "",
         "responses": {
           "201": {
@@ -980,138 +1059,27 @@
           },
           "403": {
             "description": "Forbidden"
-          }
-        }
-      },
-      "get": {
-        "description": "",
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "403": {
-            "description": "Forbidden"
-          }
-        }
-      }
-    },
-    "/tingkat-ngaji/{id}": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          }
-        }
-      },
-      "put": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          }
-        }
-      },
-      "delete": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
-          }
-        }
-      }
-    },
-    "/kelas-santri": {
-      "post": {
-        "description": "",
-        "responses": {
-          "201": {
-            "description": "Created"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "403": {
-            "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
                 "properties": {
-                  "santriId": {
-                    "example": "any"
+                  "urutan": {
+                    "type": "number",
+                    "example": 1
                   },
-                  "tahunAjaranId": {
-                    "example": "any"
-                  },
-                  "tingkatKelasId": {
-                    "example": "any"
+                  "nama": {
+                    "type": "string",
+                    "example": "Jilid 1"
                   }
                 }
               }
@@ -1120,30 +1088,11 @@
         }
       },
       "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "tahunAjaranId",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "santriId",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "tingkatKelasId",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
+        "tags": [
+          "TingkatNgaji"
         ],
+        "summary": "Ambil semua data tingkat ngaji",
+        "description": "",
         "responses": {
           "200": {
             "description": "OK"
@@ -1154,11 +1103,20 @@
           "403": {
             "description": "Forbidden"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
-    "/kelas-santri/{id}": {
-      "delete": {
+    "/tingkat-ngaji/{id}": {
+      "get": {
+        "tags": [
+          "TingkatNgaji"
+        ],
+        "summary": "Ambil detail tingkat ngaji berdasarkan ID",
         "description": "",
         "parameters": [
           {
@@ -1183,11 +1141,252 @@
           "404": {
             "description": "Not Found"
           }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "TingkatNgaji"
+        ],
+        "summary": "Update data tingkat ngaji",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "urutan": {
+                    "type": "number",
+                    "example": 1
+                  },
+                  "nama": {
+                    "type": "string",
+                    "example": "Jilid 1 Revisi"
+                  }
+                }
+              }
+            }
+          }
         }
+      },
+      "delete": {
+        "tags": [
+          "TingkatNgaji"
+        ],
+        "summary": "Hapus tingkat ngaji",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/kelas-santri": {
+      "post": {
+        "tags": [
+          "KelasSantri"
+        ],
+        "summary": "Penempatan / assign kelas santri secara manual",
+        "description": "",
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "santriId": {
+                    "type": "string",
+                    "example": "60d5ecb8b3b3a12345678901"
+                  },
+                  "tahunAjaranId": {
+                    "type": "string",
+                    "example": "60d5ecb8b3b3a12345678902"
+                  },
+                  "tingkatKelasId": {
+                    "type": "string",
+                    "example": "60d5ecb8b3b3a12345678903"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "KelasSantri"
+        ],
+        "summary": "Ambil daftar penempatan kelas santri (dapat difilter)",
+        "description": "",
+        "parameters": [
+          {
+            "name": "tahunAjaranId",
+            "in": "query",
+            "description": "Filter Tahun Ajaran",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "santriId",
+            "in": "query",
+            "description": "Filter Santri",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tingkatKelasId",
+            "in": "query",
+            "description": "Filter Tingkat Kelas",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/kelas-santri/{id}": {
+      "delete": {
+        "tags": [
+          "KelasSantri"
+        ],
+        "summary": "Hapus penempatan kelas santri",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID KelasSantri"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/kelas-santri/naik-kelas": {
       "post": {
+        "tags": [
+          "KelasSantri"
+        ],
+        "summary": "Proses naik kelas massal antar tahun ajaran",
         "description": "",
         "responses": {
           "200": {
@@ -1200,17 +1399,25 @@
             "description": "Forbidden"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
                 "properties": {
                   "tahunAjaranAsalId": {
-                    "example": "any"
+                    "type": "string",
+                    "example": "60d5ecb8b3b3a12345678901"
                   },
                   "tahunAjaranTujuanId": {
-                    "example": "any"
+                    "type": "string",
+                    "example": "60d5ecb8b3b3a12345678902"
                   }
                 }
               }
@@ -1221,6 +1428,10 @@
     },
     "/riwayat-kelas-ngaji": {
       "post": {
+        "tags": [
+          "RiwayatKelasNgaji"
+        ],
+        "summary": "Penempatan / assign kelas ngaji santri secara manual",
         "description": "",
         "responses": {
           "201": {
@@ -1236,20 +1447,33 @@
             "description": "Not Found"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
                 "properties": {
                   "santriId": {
-                    "example": "any"
+                    "type": "string",
+                    "example": "60d5ecb8b3b3a12345678901"
                   },
                   "tahunAjaranId": {
-                    "example": "any"
+                    "type": "string",
+                    "example": "60d5ecb8b3b3a12345678902"
                   },
                   "tingkatNgajiId": {
-                    "example": "any"
+                    "type": "string",
+                    "example": "60d5ecb8b3b3a12345678903"
+                  },
+                  "statusLain": {
+                    "type": "string",
+                    "example": "Khatam Al-Quran"
                   }
                 }
               }
@@ -1258,11 +1482,16 @@
         }
       },
       "get": {
+        "tags": [
+          "RiwayatKelasNgaji"
+        ],
+        "summary": "Ambil daftar riwayat kelas ngaji santri",
         "description": "",
         "parameters": [
           {
             "name": "tahunAjaranId",
             "in": "query",
+            "description": "Filter Tahun Ajaran",
             "schema": {
               "type": "string"
             }
@@ -1270,6 +1499,7 @@
           {
             "name": "santriId",
             "in": "query",
+            "description": "Filter Santri",
             "schema": {
               "type": "string"
             }
@@ -1285,11 +1515,20 @@
           "403": {
             "description": "Forbidden"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/riwayat-kelas-ngaji/{id}": {
       "put": {
+        "tags": [
+          "RiwayatKelasNgaji"
+        ],
+        "summary": "Update statusLain riwayat kelas ngaji (pasca lulus)",
         "description": "",
         "parameters": [
           {
@@ -1315,14 +1554,21 @@
             "description": "Not Found"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
                 "properties": {
                   "statusLain": {
-                    "example": "any"
+                    "type": "string",
+                    "example": "Tadarus Al-Quran"
                   }
                 }
               }
@@ -1331,6 +1577,10 @@
         }
       },
       "delete": {
+        "tags": [
+          "RiwayatKelasNgaji"
+        ],
+        "summary": "Hapus riwayat kelas ngaji",
         "description": "",
         "parameters": [
           {
@@ -1355,11 +1605,20 @@
           "404": {
             "description": "Not Found"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/riwayat-kelas-ngaji/naik-kelas": {
       "post": {
+        "tags": [
+          "RiwayatKelasNgaji"
+        ],
+        "summary": "Proses naik kelas ngaji massal antar tahun ajaran",
         "description": "",
         "responses": {
           "200": {
@@ -1372,17 +1631,25 @@
             "description": "Forbidden"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
                 "properties": {
                   "tahunAjaranAsalId": {
-                    "example": "any"
+                    "type": "string",
+                    "example": "60d5ecb8b3b3a12345678901"
                   },
                   "tahunAjaranTujuanId": {
-                    "example": "any"
+                    "type": "string",
+                    "example": "60d5ecb8b3b3a12345678902"
                   }
                 }
               }
@@ -1393,6 +1660,10 @@
     },
     "/wilayah/provinces": {
       "get": {
+        "tags": [
+          "Wilayah"
+        ],
+        "summary": "Ambil daftar provinsi di Indonesia",
         "description": "",
         "responses": {
           "200": {
@@ -1409,6 +1680,10 @@
     },
     "/wilayah/regencies/{provinceId}": {
       "get": {
+        "tags": [
+          "Wilayah"
+        ],
+        "summary": "Ambil daftar kabupaten/kota berdasarkan ID provinsi",
         "description": "",
         "parameters": [
           {
@@ -1435,6 +1710,10 @@
     },
     "/wilayah/districts/{regencyId}": {
       "get": {
+        "tags": [
+          "Wilayah"
+        ],
+        "summary": "Ambil daftar kecamatan berdasarkan ID kabupaten/kota",
         "description": "",
         "parameters": [
           {
@@ -1461,6 +1740,10 @@
     },
     "/wilayah/villages/{districtId}": {
       "get": {
+        "tags": [
+          "Wilayah"
+        ],
+        "summary": "Ambil daftar desa/kelurahan berdasarkan ID kecamatan",
         "description": "",
         "parameters": [
           {
@@ -1649,11 +1932,16 @@
     },
     "/tarif-khusus": {
       "get": {
+        "tags": [
+          "TarifKhusus"
+        ],
+        "summary": "Ambil daftar tarif khusus santri",
         "description": "",
         "parameters": [
           {
             "name": "santriId",
             "in": "query",
+            "description": "Filter ID Santri",
             "schema": {
               "type": "string"
             }
@@ -1661,6 +1949,7 @@
           {
             "name": "jenisTagihanId",
             "in": "query",
+            "description": "Filter ID Jenis Tagihan",
             "schema": {
               "type": "string"
             }
@@ -1676,9 +1965,18 @@
           "403": {
             "description": "Forbidden"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       },
       "post": {
+        "tags": [
+          "TarifKhusus"
+        ],
+        "summary": "Buat tarif khusus santri",
         "description": "",
         "responses": {
           "201": {
@@ -1694,17 +1992,33 @@
             "description": "Not Found"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
                 "properties": {
                   "santriId": {
-                    "example": "any"
+                    "type": "string",
+                    "example": "60d5ecb8b3b3a12345678901"
                   },
                   "jenisTagihanId": {
-                    "example": "any"
+                    "type": "string",
+                    "example": "60d5ecb8b3b3a12345678902"
+                  },
+                  "nominalKhusus": {
+                    "type": "number",
+                    "example": 50000
+                  },
+                  "keterangan": {
+                    "type": "string",
+                    "example": "Diskon anak yatim"
                   }
                 }
               }
@@ -1715,6 +2029,10 @@
     },
     "/tarif-khusus/{id}": {
       "delete": {
+        "tags": [
+          "TarifKhusus"
+        ],
+        "summary": "Hapus tarif khusus santri",
         "description": "",
         "parameters": [
           {
@@ -1739,12 +2057,21 @@
           "404": {
             "description": "Not Found"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/tagihan/generate-bulk": {
       "post": {
-        "description": "",
+        "tags": [
+          "Tagihan"
+        ],
+        "summary": "Generate tagihan massal untuk semua santri aktif",
+        "description": "Membuat tagihan secara bulk. Bisa target semua santri aktif atau custom santriIds. Otomatis skip jika tagihan periode tersebut sudah ada.",
         "responses": {
           "201": {
             "description": "Created"
@@ -1759,29 +2086,46 @@
             "description": "Not Found"
           }
         },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
                 "properties": {
                   "jenisTagihanId": {
-                    "example": "any"
+                    "type": "string"
                   },
                   "periode": {
-                    "example": "any"
+                    "type": "string",
+                    "example": "2026-09"
                   },
                   "jatuhTempo": {
-                    "example": "any"
+                    "type": "string",
+                    "format": "date"
                   },
                   "target": {
-                    "example": "any"
+                    "type": "string",
+                    "enum": [
+                      "semua",
+                      "custom"
+                    ],
+                    "example": "semua"
                   },
                   "santriIds": {
-                    "example": "any"
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
                   },
                   "hanyaLayananLaundry": {
-                    "example": "any"
+                    "type": "boolean",
+                    "example": false
                   }
                 }
               }
@@ -1792,11 +2136,16 @@
     },
     "/tagihan": {
       "get": {
+        "tags": [
+          "Tagihan"
+        ],
+        "summary": "Ambil semua tagihan (bisa filter by santriId, jenisTagihanId, status, periode, overdue)",
         "description": "",
         "parameters": [
           {
             "name": "santriId",
             "in": "query",
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -1804,6 +2153,7 @@
           {
             "name": "jenisTagihanId",
             "in": "query",
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -1811,6 +2161,8 @@
           {
             "name": "status",
             "in": "query",
+            "required": false,
+            "description": "belum_bayar / sebagian / lunas",
             "schema": {
               "type": "string"
             }
@@ -1818,6 +2170,7 @@
           {
             "name": "periode",
             "in": "query",
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -1825,6 +2178,8 @@
           {
             "name": "overdue",
             "in": "query",
+            "required": false,
+            "description": "true = hanya tagihan lewat jatuh tempo",
             "schema": {
               "type": "string"
             }
@@ -1840,9 +2195,18 @@
           "403": {
             "description": "Forbidden"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       },
       "post": {
+        "tags": [
+          "Tagihan"
+        ],
+        "summary": "Buat tagihan untuk santri tertentu",
         "description": "",
         "responses": {
           "201": {
@@ -1856,6 +2220,40 @@
           },
           "404": {
             "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "santriId": {
+                    "type": "string",
+                    "example": "60f7a..."
+                  },
+                  "jenisTagihanId": {
+                    "type": "string",
+                    "example": "60f7b..."
+                  },
+                  "periode": {
+                    "type": "string",
+                    "example": "2026-09"
+                  },
+                  "jatuhTempo": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2026-09-30"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -1882,11 +2280,16 @@
     },
     "/pembayaran": {
       "get": {
+        "tags": [
+          "Pembayaran"
+        ],
+        "summary": "Ambil semua riwayat pembayaran (bisa filter by tagihanId / santriId)",
         "description": "",
         "parameters": [
           {
             "name": "tagihanId",
             "in": "query",
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -1894,6 +2297,7 @@
           {
             "name": "santriId",
             "in": "query",
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -1909,9 +2313,18 @@
           "403": {
             "description": "Forbidden"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       },
       "post": {
+        "tags": [
+          "Pembayaran"
+        ],
+        "summary": "Catat pembayaran tagihan (dari halaman detail tagihan)",
         "description": "",
         "responses": {
           "201": {
@@ -1922,20 +2335,53 @@
           },
           "403": {
             "description": "Forbidden"
-          },
-          "404": {
-            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "tagihanId": {
+                    "type": "string",
+                    "example": "60f7a..."
+                  },
+                  "nominalBayar": {
+                    "type": "number",
+                    "example": 500000
+                  },
+                  "tanggalBayar": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2026-09-01"
+                  }
+                }
+              }
+            }
           }
         }
       }
     },
     "/rekening": {
       "get": {
+        "tags": [
+          "Rekening"
+        ],
+        "summary": "Ambil semua rekening (bisa filter by jenisRekening / santriId)",
         "description": "",
         "parameters": [
           {
             "name": "jenisRekening",
             "in": "query",
+            "required": false,
+            "description": "uang_jajan atau tabungan_ziarah",
             "schema": {
               "type": "string"
             }
@@ -1943,6 +2389,7 @@
           {
             "name": "santriId",
             "in": "query",
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -1958,9 +2405,211 @@
           "403": {
             "description": "Forbidden"
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       },
       "post": {
+        "tags": [
+          "Rekening"
+        ],
+        "summary": "Buat rekening baru untuk santri",
+        "description": "",
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "santriId": {
+                    "type": "string",
+                    "example": "60f7a..."
+                  },
+                  "jenisRekening": {
+                    "type": "string",
+                    "enum": [
+                      "uang_jajan",
+                      "tabungan_ziarah"
+                    ]
+                  },
+                  "nominalHarian": {
+                    "type": "number",
+                    "example": 10000
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rekening/{id}": {
+      "get": {
+        "tags": [
+          "Rekening"
+        ],
+        "summary": "Ambil detail rekening berdasarkan ID (beserta data santri + kamar + asrama)",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID rekening"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/rekening/mutasi": {
+      "post": {
+        "tags": [
+          "MutasiRekening"
+        ],
+        "summary": "Catat mutasi rekening (setor/tarik manual)",
+        "description": "",
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "rekeningId": {
+                    "type": "string",
+                    "example": "60f7a..."
+                  },
+                  "jenis": {
+                    "type": "string",
+                    "enum": [
+                      "setor",
+                      "tarik"
+                    ]
+                  },
+                  "kategori": {
+                    "type": "string",
+                    "enum": [
+                      "harian",
+                      "manual"
+                    ]
+                  },
+                  "nominal": {
+                    "type": "number",
+                    "example": 50000
+                  },
+                  "keterangan": {
+                    "type": "string",
+                    "example": "Setoran mingguan"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/rekening/{id}/mutasi": {
+      "get": {
+        "tags": [
+          "MutasiRekening"
+        ],
+        "summary": "Ambil riwayat mutasi berdasarkan ID rekening",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID rekening"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/rekening/uang-jajan/hari-ini": {
+      "get": {
+        "tags": [
+          "UangJajan"
+        ],
+        "summary": "Ambil status pembagian uang jajan hari ini untuk semua santri",
         "description": "",
         "responses": {
           "200": {
@@ -1972,7 +2621,225 @@
           "403": {
             "description": "Forbidden"
           }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/rekening/uang-jajan/bagikan": {
+      "post": {
+        "tags": [
+          "UangJajan"
+        ],
+        "summary": "Bagikan uang jajan harian ke santri terpilih",
+        "description": "Memproses penarikan harian untuk rekening-rekening yang dipilih. Validasi: belum diambil hari ini, saldo cukup, nominalHarian sudah diset.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "rekeningIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "example": [
+                      "60f7a...",
+                      "60f7b..."
+                    ]
+                  }
+                }
+              }
+            }
+          }
         }
+      }
+    },
+    "/kasir/transaksi": {
+      "post": {
+        "tags": [
+          "Kasir"
+        ],
+        "summary": "Proses transaksi kasir (bayar tagihan + setor/tarik rekening)",
+        "description": "Memproses satu atau lebih item transaksi dalam satu kwitansi. Mendukung bayar_tagihan, setor_rekening, dan tarik_rekening. Menggunakan MongoDB transaction.",
+        "responses": {
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "santriId": {
+                    "type": "string",
+                    "example": "60f7a..."
+                  },
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "tipe": {
+                          "type": "string",
+                          "enum": [
+                            "bayar_tagihan",
+                            "setor_rekening",
+                            "tarik_rekening"
+                          ]
+                        },
+                        "tagihanId": {
+                          "type": "string"
+                        },
+                        "rekeningId": {
+                          "type": "string"
+                        },
+                        "nominal": {
+                          "type": "number",
+                          "example": 500000
+                        },
+                        "keterangan": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/kasir/{id}/ringkasan": {
+      "get": {
+        "tags": [
+          "Kasir"
+        ],
+        "summary": "Ambil ringkasan data santri untuk kasir (tagihan belum lunas + rekening)",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "ID santri (MongoDB ObjectId)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/kwitansi": {
+      "get": {
+        "tags": [
+          "Kasir"
+        ],
+        "summary": "Ambil riwayat kwitansi / transaksi (dapat difilter by santriId) beserta ringkasan pembayaran & tunggakan",
+        "description": "",
+        "parameters": [
+          {
+            "name": "santriId",
+            "in": "query",
+            "description": "Filter ID Santri (opsional)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "default": 1,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "default": 10,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     }
   },

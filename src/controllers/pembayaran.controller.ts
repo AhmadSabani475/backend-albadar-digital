@@ -13,6 +13,26 @@ const PembayaranValidateSchema = Yup.object({
 
 export default {
     async create(req: IReqUser, res: Response) {
+        /**
+         #swagger.tags = ['Pembayaran']
+         #swagger.summary = 'Catat pembayaran tagihan (dari halaman detail tagihan)'
+         #swagger.security = [{ "bearerAuth": [] }]
+         #swagger.requestBody = {
+            required: true,
+            content: {
+                "application/json": {
+                    schema: {
+                        type: "object",
+                        properties: {
+                            tagihanId: { type: "string", example: "60f7a..." },
+                            nominalBayar: { type: "number", example: 500000 },
+                            tanggalBayar: { type: "string", format: "date", example: "2026-09-01" }
+                        }
+                    }
+                }
+            }
+         }
+         */
         try {
             const request = await PembayaranValidateSchema.validate(req.body);
             const dicatatOleh = req.user?.id;
@@ -27,6 +47,13 @@ export default {
         }
     },
     async findAll(req: Request, res: Response) {
+        /**
+         #swagger.tags = ['Pembayaran']
+         #swagger.summary = 'Ambil semua riwayat pembayaran (bisa filter by tagihanId / santriId)'
+         #swagger.security = [{ "bearerAuth": [] }]
+         #swagger.parameters['tagihanId'] = { in: 'query', type: 'string', required: false }
+         #swagger.parameters['santriId'] = { in: 'query', type: 'string', required: false }
+         */
         try {
             const { tagihanId, santriId } = req.query;
 

@@ -16,6 +16,28 @@ const MutasiRekeningValidateSchema = Yup.object({
 
 export default {
     async create(req: IReqUser, res: Response) {
+        /**
+         #swagger.tags = ['MutasiRekening']
+         #swagger.summary = 'Catat mutasi rekening (setor/tarik manual)'
+         #swagger.security = [{ "bearerAuth": [] }]
+         #swagger.requestBody = {
+            required: true,
+            content: {
+                "application/json": {
+                    schema: {
+                        type: "object",
+                        properties: {
+                            rekeningId: { type: "string", example: "60f7a..." },
+                            jenis: { type: "string", enum: ["setor", "tarik"] },
+                            kategori: { type: "string", enum: ["harian", "manual"] },
+                            nominal: { type: "number", example: 50000 },
+                            keterangan: { type: "string", example: "Setoran mingguan" }
+                        }
+                    }
+                }
+            }
+         }
+         */
         try {
             const request = await MutasiRekeningValidateSchema.validate(req.body);
             const dicatatOleh = req.user?.id ? new Types.ObjectId(req.user.id) : undefined;
@@ -32,6 +54,12 @@ export default {
         }
     },
     async findMutasiById(req: Request, res: Response) {
+        /**
+         #swagger.tags = ['MutasiRekening']
+         #swagger.summary = 'Ambil riwayat mutasi berdasarkan ID rekening'
+         #swagger.security = [{ "bearerAuth": [] }]
+         #swagger.parameters['id'] = { in: 'path', required: true, type: 'string', description: 'ID rekening' }
+         */
         try {
             const { id } = req.params;
             if (!Types.ObjectId.isValid(id)) {

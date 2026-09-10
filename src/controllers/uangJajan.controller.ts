@@ -5,6 +5,11 @@ import { IReqUser } from "../middleware/auth.middleware"
 
 export default {
     async getStatusHariIni(req: Request, res: Response) {
+        /**
+         #swagger.tags = ['UangJajan']
+         #swagger.summary = 'Ambil status pembagian uang jajan hari ini untuk semua santri'
+         #swagger.security = [{ "bearerAuth": [] }]
+         */
         try {
             const rekeningList = await RekeningModel.find({
                 jenisRekening: 'uang_jajan'
@@ -43,6 +48,25 @@ export default {
     },
 
     async bagikan(req: IReqUser, res: Response) {
+        /**
+         #swagger.tags = ['UangJajan']
+         #swagger.summary = 'Bagikan uang jajan harian ke santri terpilih'
+         #swagger.description = 'Memproses penarikan harian untuk rekening-rekening yang dipilih. Validasi: belum diambil hari ini, saldo cukup, nominalHarian sudah diset.'
+         #swagger.security = [{ "bearerAuth": [] }]
+         #swagger.requestBody = {
+            required: true,
+            content: {
+                "application/json": {
+                    schema: {
+                        type: "object",
+                        properties: {
+                            rekeningIds: { type: "array", items: { type: "string" }, example: ["60f7a...", "60f7b..."] }
+                        }
+                    }
+                }
+            }
+         }
+         */
         try {
             const { rekeningIds } = req.body as { rekeningIds: string[] }
 

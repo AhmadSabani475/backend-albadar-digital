@@ -15,6 +15,13 @@ const TarifKhususValidateSchema = Yup.object({
 
 export default {
     async findAll(req: Request, res: Response) {
+        /**
+         #swagger.tags = ['TarifKhusus']
+         #swagger.summary = 'Ambil daftar tarif khusus santri'
+         #swagger.security = [{ "bearerAuth": [] }]
+         #swagger.parameters['santriId'] = { in: 'query', type: 'string', description: 'Filter ID Santri' }
+         #swagger.parameters['jenisTagihanId'] = { in: 'query', type: 'string', description: 'Filter ID Jenis Tagihan' }
+         */
         try {
             const { santriId, jenisTagihanId } = req.query;
             const filter: Record<string, unknown> = {};
@@ -32,6 +39,27 @@ export default {
         }
     },
     async create(req: Request, res: Response) {
+        /**
+         #swagger.tags = ['TarifKhusus']
+         #swagger.summary = 'Buat tarif khusus santri'
+         #swagger.security = [{ "bearerAuth": [] }]
+         #swagger.requestBody = {
+            required: true,
+            content: {
+                "application/json": {
+                    schema: {
+                        type: "object",
+                        properties: {
+                            santriId: { type: "string", example: "60d5ecb8b3b3a12345678901" },
+                            jenisTagihanId: { type: "string", example: "60d5ecb8b3b3a12345678902" },
+                            nominalKhusus: { type: "number", example: 50000 },
+                            keterangan: { type: "string", example: "Diskon anak yatim" }
+                        }
+                    }
+                }
+            }
+         }
+         */
         try {
             const request = req.body as unknown as TarifKhusus;
             await TarifKhususValidateSchema.validate(request);
@@ -53,6 +81,12 @@ export default {
         }
     },
     async deleteById(req: Request, res: Response) {
+        /**
+         #swagger.tags = ['TarifKhusus']
+         #swagger.summary = 'Hapus tarif khusus santri'
+         #swagger.security = [{ "bearerAuth": [] }]
+         #swagger.parameters['id'] = { in: 'path', required: true, type: 'string' }
+         */
         try {
             const { id } = req.params;
             if (!Types.ObjectId.isValid(id)) {

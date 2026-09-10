@@ -11,6 +11,25 @@ const tingkatNgajiValidateSchema = Yup.object({
 
 export default {
     async create(req: Request, res: Response) {
+        /**
+         #swagger.tags = ['TingkatNgaji']
+         #swagger.summary = 'Tambah tingkat ngaji baru'
+         #swagger.security = [{ "bearerAuth": [] }]
+         #swagger.requestBody = {
+            required: true,
+            content: {
+                "application/json": {
+                    schema: {
+                        type: "object",
+                        properties: {
+                            urutan: { type: "number", example: 1 },
+                            nama: { type: "string", example: "Jilid 1" }
+                        }
+                    }
+                }
+            }
+         }
+         */
         try {
             const data = req.body as unknown as TingkatNgaji;
             await tingkatNgajiValidateSchema.validate(data);
@@ -26,6 +45,11 @@ export default {
     },
 
     async findAll(req: Request, res: Response) {
+        /**
+         #swagger.tags = ['TingkatNgaji']
+         #swagger.summary = 'Ambil semua data tingkat ngaji'
+         #swagger.security = [{ "bearerAuth": [] }]
+         */
         try {
             const result = await TingkatNgajiModel.find().sort({ urutan: 1 });
             return res.status(200).json({ message: "Data Berhasil Diambil", data: result });
@@ -36,6 +60,12 @@ export default {
     },
 
     async findById(req: Request, res: Response) {
+        /**
+         #swagger.tags = ['TingkatNgaji']
+         #swagger.summary = 'Ambil detail tingkat ngaji berdasarkan ID'
+         #swagger.security = [{ "bearerAuth": [] }]
+         #swagger.parameters['id'] = { in: 'path', required: true, type: 'string' }
+         */
         try {
             const { id } = req.params;
             if (!Types.ObjectId.isValid(id)) {
@@ -53,6 +83,26 @@ export default {
     },
 
     async update(req: Request, res: Response) {
+        /**
+         #swagger.tags = ['TingkatNgaji']
+         #swagger.summary = 'Update data tingkat ngaji'
+         #swagger.security = [{ "bearerAuth": [] }]
+         #swagger.parameters['id'] = { in: 'path', required: true, type: 'string' }
+         #swagger.requestBody = {
+            required: true,
+            content: {
+                "application/json": {
+                    schema: {
+                        type: "object",
+                        properties: {
+                            urutan: { type: "number", example: 1 },
+                            nama: { type: "string", example: "Jilid 1 Revisi" }
+                        }
+                    }
+                }
+            }
+         }
+         */
         try {
             const { id } = req.params;
             if (!Types.ObjectId.isValid(id)) {
@@ -75,6 +125,12 @@ export default {
     },
 
     async delete(req: Request, res: Response) {
+        /**
+         #swagger.tags = ['TingkatNgaji']
+         #swagger.summary = 'Hapus tingkat ngaji'
+         #swagger.security = [{ "bearerAuth": [] }]
+         #swagger.parameters['id'] = { in: 'path', required: true, type: 'string' }
+         */
         try {
             const { id } = req.params;
             if (!Types.ObjectId.isValid(id)) {

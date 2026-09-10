@@ -56,6 +56,12 @@ export default {
         }
     },
     async deleteById(req: Request, res: Response) {
+        /**
+         #swagger.tags = ['Asrama']
+         #swagger.summary = 'Hapus data asrama'
+         #swagger.security = [{ "bearerAuth": [] }]
+         #swagger.parameters['id'] = { in: 'path', required: true, type: 'string', description: 'ID Asrama' }
+        */
         try {
             const { id } = req.params;
             const result = await asramaModels.findByIdAndDelete(id);

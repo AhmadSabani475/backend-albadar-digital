@@ -156,6 +156,12 @@ export default {
         }
     },
     async resetPasswordDefault(req: Request, res: Response) {
+        /**
+         #swagger.tags = ['Users']
+         #swagger.summary = 'Reset password user ke password default'
+         #swagger.security = [{ "bearerAuth": [] }]
+         #swagger.parameters['id'] = { in: 'path', required: true, type: 'string', description: 'ID User' }
+        */
         try {
             const { id } = req.params;
             const user = await userModels.findById(id);

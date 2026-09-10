@@ -19,6 +19,27 @@ export default {
     // Assign manual — dipake pas santri baru masuk, atau isi statusLain
     // buat santri yang udah lulus tingkat 6
     async create(req: Request, res: Response) {
+        /**
+         #swagger.tags = ['RiwayatKelasNgaji']
+         #swagger.summary = 'Penempatan / assign kelas ngaji santri secara manual'
+         #swagger.security = [{ "bearerAuth": [] }]
+         #swagger.requestBody = {
+            required: true,
+            content: {
+                "application/json": {
+                    schema: {
+                        type: "object",
+                        properties: {
+                            santriId: { type: "string", example: "60d5ecb8b3b3a12345678901" },
+                            tahunAjaranId: { type: "string", example: "60d5ecb8b3b3a12345678902" },
+                            tingkatNgajiId: { type: "string", example: "60d5ecb8b3b3a12345678903" },
+                            statusLain: { type: "string", example: "Khatam Al-Quran" }
+                        }
+                    }
+                }
+            }
+         }
+         */
         try {
             const data = req.body as unknown as RiwayatKelasNgaji;
             await riwayatKelasNgajiValidateSchema.validate(data);
@@ -47,6 +68,13 @@ export default {
     },
 
     async findAll(req: Request, res: Response) {
+        /**
+         #swagger.tags = ['RiwayatKelasNgaji']
+         #swagger.summary = 'Ambil daftar riwayat kelas ngaji santri'
+         #swagger.security = [{ "bearerAuth": [] }]
+         #swagger.parameters['tahunAjaranId'] = { in: 'query', type: 'string', description: 'Filter Tahun Ajaran' }
+         #swagger.parameters['santriId'] = { in: 'query', type: 'string', description: 'Filter Santri' }
+         */
         try {
             const { tahunAjaranId, santriId } = req.query;
             const filter: Record<string, unknown> = {};
@@ -66,7 +94,25 @@ export default {
     },
 
     async update(req: Request, res: Response) {
-        // Dipake khusus buat isi/edit statusLain pasca lulus tingkat 6
+        /**
+         #swagger.tags = ['RiwayatKelasNgaji']
+         #swagger.summary = 'Update statusLain riwayat kelas ngaji (pasca lulus)'
+         #swagger.security = [{ "bearerAuth": [] }]
+         #swagger.parameters['id'] = { in: 'path', required: true, type: 'string' }
+         #swagger.requestBody = {
+            required: true,
+            content: {
+                "application/json": {
+                    schema: {
+                        type: "object",
+                        properties: {
+                            statusLain: { type: "string", example: "Tadarus Al-Quran" }
+                        }
+                    }
+                }
+            }
+         }
+         */
         try {
             const { id } = req.params;
             if (!Types.ObjectId.isValid(id)) {
@@ -92,6 +138,12 @@ export default {
     },
 
     async delete(req: Request, res: Response) {
+        /**
+         #swagger.tags = ['RiwayatKelasNgaji']
+         #swagger.summary = 'Hapus riwayat kelas ngaji'
+         #swagger.security = [{ "bearerAuth": [] }]
+         #swagger.parameters['id'] = { in: 'path', required: true, type: 'string' }
+         */
         try {
             const { id } = req.params;
             if (!Types.ObjectId.isValid(id)) {
@@ -110,6 +162,25 @@ export default {
 
     // Proses "Naik Kelas Ngaji" massal
     async naikKelasNgaji(req: Request, res: Response) {
+        /**
+         #swagger.tags = ['RiwayatKelasNgaji']
+         #swagger.summary = 'Proses naik kelas ngaji massal antar tahun ajaran'
+         #swagger.security = [{ "bearerAuth": [] }]
+         #swagger.requestBody = {
+            required: true,
+            content: {
+                "application/json": {
+                    schema: {
+                        type: "object",
+                        properties: {
+                            tahunAjaranAsalId: { type: "string", example: "60d5ecb8b3b3a12345678901" },
+                            tahunAjaranTujuanId: { type: "string", example: "60d5ecb8b3b3a12345678902" }
+                        }
+                    }
+                }
+            }
+         }
+         */
         try {
             const { tahunAjaranAsalId, tahunAjaranTujuanId } = req.body;
             if (!tahunAjaranAsalId || !tahunAjaranTujuanId) {

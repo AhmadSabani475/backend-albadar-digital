@@ -17,6 +17,26 @@ export default {
     // Assign kelas manual — dipake pas santri baru masuk, atau keputusan manual
     // buat santri yang lulus dari tingkat paling akhir (lanjut MA/SMK/keluar)
     async create(req: Request, res: Response) {
+        /**
+         #swagger.tags = ['KelasSantri']
+         #swagger.summary = 'Penempatan / assign kelas santri secara manual'
+         #swagger.security = [{ "bearerAuth": [] }]
+         #swagger.requestBody = {
+            required: true,
+            content: {
+                "application/json": {
+                    schema: {
+                        type: "object",
+                        properties: {
+                            santriId: { type: "string", example: "60d5ecb8b3b3a12345678901" },
+                            tahunAjaranId: { type: "string", example: "60d5ecb8b3b3a12345678902" },
+                            tingkatKelasId: { type: "string", example: "60d5ecb8b3b3a12345678903" }
+                        }
+                    }
+                }
+            }
+         }
+         */
         try {
             const data = req.body as unknown as KelasSantri;
             await kelasSantriValidateSchema.validate(data);
@@ -44,6 +64,14 @@ export default {
 
     // List, bisa difilter by tahunAjaranId / santriId / tingkatKelasId
     async findAll(req: Request, res: Response) {
+        /**
+         #swagger.tags = ['KelasSantri']
+         #swagger.summary = 'Ambil daftar penempatan kelas santri (dapat difilter)'
+         #swagger.security = [{ "bearerAuth": [] }]
+         #swagger.parameters['tahunAjaranId'] = { in: 'query', type: 'string', description: 'Filter Tahun Ajaran' }
+         #swagger.parameters['santriId'] = { in: 'query', type: 'string', description: 'Filter Santri' }
+         #swagger.parameters['tingkatKelasId'] = { in: 'query', type: 'string', description: 'Filter Tingkat Kelas' }
+         */
         try {
             const { tahunAjaranId, santriId, tingkatKelasId } = req.query;
             const filter: Record<string, unknown> = {};
@@ -64,6 +92,12 @@ export default {
     },
 
     async delete(req: Request, res: Response) {
+        /**
+         #swagger.tags = ['KelasSantri']
+         #swagger.summary = 'Hapus penempatan kelas santri'
+         #swagger.security = [{ "bearerAuth": [] }]
+         #swagger.parameters['id'] = { in: 'path', required: true, type: 'string', description: 'ID KelasSantri' }
+         */
         try {
             const { id } = req.params;
             if (!Types.ObjectId.isValid(id)) {
@@ -82,6 +116,25 @@ export default {
 
     // Endpoint utama: proses "Naik Kelas" massal dari 1 tahun ajaran ke tahun ajaran berikutnya
     async naikKelas(req: Request, res: Response) {
+        /**
+         #swagger.tags = ['KelasSantri']
+         #swagger.summary = 'Proses naik kelas massal antar tahun ajaran'
+         #swagger.security = [{ "bearerAuth": [] }]
+         #swagger.requestBody = {
+            required: true,
+            content: {
+                "application/json": {
+                    schema: {
+                        type: "object",
+                        properties: {
+                            tahunAjaranAsalId: { type: "string", example: "60d5ecb8b3b3a12345678901" },
+                            tahunAjaranTujuanId: { type: "string", example: "60d5ecb8b3b3a12345678902" }
+                        }
+                    }
+                }
+            }
+         }
+         */
         try {
             const { tahunAjaranAsalId, tahunAjaranTujuanId } = req.body;
 

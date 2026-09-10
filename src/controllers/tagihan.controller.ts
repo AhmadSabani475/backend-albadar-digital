@@ -15,6 +15,27 @@ const TagihanValidateSchema = Yup.object({
 
 export default {
     async create(req: Request, res: Response) {
+        /**
+         #swagger.tags = ['Tagihan']
+         #swagger.summary = 'Buat tagihan untuk santri tertentu'
+         #swagger.security = [{ "bearerAuth": [] }]
+         #swagger.requestBody = {
+            required: true,
+            content: {
+                "application/json": {
+                    schema: {
+                        type: "object",
+                        properties: {
+                            santriId: { type: "string", example: "60f7a..." },
+                            jenisTagihanId: { type: "string", example: "60f7b..." },
+                            periode: { type: "string", example: "2026-09" },
+                            jatuhTempo: { type: "string", format: "date", example: "2026-09-30" }
+                        }
+                    }
+                }
+            }
+         }
+         */
         try {
             const request = await TagihanValidateSchema.validate(req.body);
             const [santri, jenisTagihan] = await Promise.all([
@@ -42,6 +63,16 @@ export default {
         }
     },
     async findAll(req: Request, res: Response) {
+        /**
+         #swagger.tags = ['Tagihan']
+         #swagger.summary = 'Ambil semua tagihan (bisa filter by santriId, jenisTagihanId, status, periode, overdue)'
+         #swagger.security = [{ "bearerAuth": [] }]
+         #swagger.parameters['santriId'] = { in: 'query', type: 'string', required: false }
+         #swagger.parameters['jenisTagihanId'] = { in: 'query', type: 'string', required: false }
+         #swagger.parameters['status'] = { in: 'query', type: 'string', required: false, description: 'belum_bayar / sebagian / lunas' }
+         #swagger.parameters['periode'] = { in: 'query', type: 'string', required: false }
+         #swagger.parameters['overdue'] = { in: 'query', type: 'string', required: false, description: 'true = hanya tagihan lewat jatuh tempo' }
+         */
         try {
             const { santriId, jenisTagihanId, status, periode, overdue } = req.query;
 
@@ -71,6 +102,30 @@ export default {
         }
     },
     async createBulk(req: Request, res: Response) {
+        /**
+         #swagger.tags = ['Tagihan']
+         #swagger.summary = 'Generate tagihan massal untuk semua santri aktif'
+         #swagger.description = 'Membuat tagihan secara bulk. Bisa target semua santri aktif atau custom santriIds. Otomatis skip jika tagihan periode tersebut sudah ada.'
+         #swagger.security = [{ "bearerAuth": [] }]
+         #swagger.requestBody = {
+            required: true,
+            content: {
+                "application/json": {
+                    schema: {
+                        type: "object",
+                        properties: {
+                            jenisTagihanId: { type: "string" },
+                            periode: { type: "string", example: "2026-09" },
+                            jatuhTempo: { type: "string", format: "date" },
+                            target: { type: "string", enum: ["semua", "custom"], example: "semua" },
+                            santriIds: { type: "array", items: { type: "string" } },
+                            hanyaLayananLaundry: { type: "boolean", example: false }
+                        }
+                    }
+                }
+            }
+         }
+         */
         try {
             const { jenisTagihanId, periode, jatuhTempo, target, santriIds, hanyaLayananLaundry } = req.body;
 
@@ -140,6 +195,12 @@ export default {
         }
     },
     async findById(req: Request, res: Response) {
+        /**
+         #swagger.tags = ['Tagihan']
+         #swagger.summary = 'Ambil detail tagihan berdasarkan ID (beserta data santri + jenis tagihan)'
+         #swagger.security = [{ "bearerAuth": [] }]
+         #swagger.parameters['id'] = { in: 'path', required: true, type: 'string', description: 'ID tagihan' }
+         */
         try {
             const { id } = req.params;
             if (!Types.ObjectId.isValid(id)) {

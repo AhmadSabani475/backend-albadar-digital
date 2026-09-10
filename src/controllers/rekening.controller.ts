@@ -15,6 +15,26 @@ const rekeningValidateSchema = Yup.object({
 
 export default {
     async create(req: Request, res: Response) {
+        /**
+         #swagger.tags = ['Rekening']
+         #swagger.summary = 'Buat rekening baru untuk santri'
+         #swagger.security = [{ "bearerAuth": [] }]
+         #swagger.requestBody = {
+            required: true,
+            content: {
+                "application/json": {
+                    schema: {
+                        type: "object",
+                        properties: {
+                            santriId: { type: "string", example: "60f7a..." },
+                            jenisRekening: { type: "string", enum: ["uang_jajan", "tabungan_ziarah"] },
+                            nominalHarian: { type: "number", example: 10000 }
+                        }
+                    }
+                }
+            }
+         }
+         */
         try {
             const request = await rekeningValidateSchema.validate(req.body);
             const nominalHarian = request.jenisRekening === 'uang_jajan' ? request.nominalHarian : undefined;
@@ -33,6 +53,13 @@ export default {
         }
     },
     async findAll(req: Request, res: Response) {
+        /**
+         #swagger.tags = ['Rekening']
+         #swagger.summary = 'Ambil semua rekening (bisa filter by jenisRekening / santriId)'
+         #swagger.security = [{ "bearerAuth": [] }]
+         #swagger.parameters['jenisRekening'] = { in: 'query', type: 'string', required: false, description: 'uang_jajan atau tabungan_ziarah' }
+         #swagger.parameters['santriId'] = { in: 'query', type: 'string', required: false }
+         */
         try {
             const { jenisRekening, santriId } = req.query;
             const validJenis = ['uang_jajan', 'tabungan_ziarah'];
@@ -54,6 +81,12 @@ export default {
         }
     },
     async findById(req: Request, res: Response) {
+        /**
+         #swagger.tags = ['Rekening']
+         #swagger.summary = 'Ambil detail rekening berdasarkan ID (beserta data santri + kamar + asrama)'
+         #swagger.security = [{ "bearerAuth": [] }]
+         #swagger.parameters['id'] = { in: 'path', required: true, type: 'string', description: 'ID rekening' }
+         */
         try {
             const { id } = req.params;
             if (!Types.ObjectId.isValid(id)) {
