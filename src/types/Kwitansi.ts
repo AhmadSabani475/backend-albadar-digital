@@ -21,6 +21,7 @@ export interface Kwitansi {
     items: KwitansiItem[];
     saldoSnapshot: SaldoSnapshot[];
     totalNominal: number;
+    metodePembayaran: string;
     diCatatOleh: User;
     createdAt: string;
 }

@@ -18,6 +18,12 @@ const KwitansiItemSchema = new Schema({
         type: Number,
         required: true
     },
+    metodePembayaran: {
+        type: String,
+        enum: ['cash', 'transfer'],
+        required: true,
+        default: 'cash'
+    },
     label: { type: String, required: true },
     keterangan: {
         type: String

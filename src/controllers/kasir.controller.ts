@@ -56,6 +56,7 @@ const ItemSchema = Yup.object({
 
 const KasirTransaksiSchema = Yup.object({
     santriId: Yup.string().required(),
+    metodePembayaran: Yup.string().oneOf(['cash', 'transfer']).default('cash').required(),
     items: Yup.array().of(ItemSchema).min(1, 'Minimal 1 item transaksi').required(),
 });
 
@@ -163,6 +164,7 @@ export default {
                     items: hasilItems,
                     saldoSnapshot,
                     totalNominal,
+                    metodePembayaran: request.metodePembayaran,
                     diCatatOleh: dicatatOleh,
                 }],
                 { session }
