@@ -127,13 +127,39 @@ export default {
 #swagger.security = [{ "bearerAuth": [] }]
 */
         try {
-            const result = await SantriModels.find().populate({
-                path: 'kamarId',
-                populate: 'asramaId'
-            }).populate('sekolahId');
+            const { status, page = 1, limit = 10 } = req.query;
+            const validStatus = ['aktif', 'alumni', 'dikeluarkan'];
+            if (status && !validStatus.includes(status as string)) {
+                return res.status(400).json({
+                    message: 'Status tidak valid',
+                    data: null
+                })
+            }
+            const filter: Record<string, unknown> = {};
+            if (status) filter.status = status;
+            const pageNum = Number(page);
+            const limitNum = Number(limit);
+            const skip = (pageNum - 1) * limitNum;
+            const [result, total] = await Promise.all([
+                SantriModels.find(filter)
+                    .populate({
+                        path: 'kamarId',
+                        populate: 'asramaId'
+                    })
+                    .populate('sekolahId')
+                    .skip(skip)
+                    .limit(limitNum),
+                SantriModels.countDocuments(filter),
+            ]);
             res.status(200).json({
                 message: 'Data Santri Berhasil diambil',
-                data: result
+                data: result,
+                meta: {
+                    page: pageNum,
+                    limit: limitNum,
+                    total,
+                    totalPages: Math.ceil(total / limitNum),
+                },
             })
         } catch (error) {
             const err = error as unknown as Error;
