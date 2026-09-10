@@ -24,6 +24,16 @@ const PembayaranValidateSchema = new Schema<Pembayaran>({
         type: Schema.Types.Number,
         required: true
     },
+    metodeBayar: {
+        type: Schema.Types.String,
+        enum: ['cash', 'transfer'],
+        default: 'cash',
+        required: false
+    },
+    keterangan: {
+        type: Schema.Types.String,
+        required: false
+    },
     tanggalBayar: {
         type: Schema.Types.Date,
         required: true

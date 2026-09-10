@@ -110,6 +110,7 @@ export default {
                         {
                             tagihanId: item.tagihanId as string,
                             nominalBayar: item.nominal,
+                            metodeBayar: request.metodePembayaran,
                             keterangan: item.keterangan,
                             dicatatOleh,
                         },

@@ -18,12 +18,6 @@ const KwitansiItemSchema = new Schema({
         type: Number,
         required: true
     },
-    metodePembayaran: {
-        type: String,
-        enum: ['cash', 'transfer'],
-        required: true,
-        default: 'cash'
-    },
     label: { type: String, required: true },
     keterangan: {
         type: String
@@ -51,6 +45,12 @@ const KwitansiValidateSchema = new Schema<Kwitansi>({
     santriId: {
         type: Schema.Types.ObjectId,
         required: true
+    },
+    metodePembayaran: {
+        type: Schema.Types.String,
+        enum: ['cash', 'transfer'],
+        required: true,
+        default: 'cash'
     },
     items: {
         type: [KwitansiItemSchema],

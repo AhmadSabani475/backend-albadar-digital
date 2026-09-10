@@ -7,4 +7,6 @@ export interface Pembayaran{
     dicatatOleh: Types.ObjectId,
     tanggalBayar: Date,
     nominalBayar: number,
+    metodeBayar?: 'cash' | 'transfer' | string,
+    keterangan?: string,
 }
