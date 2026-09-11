@@ -44,6 +44,7 @@ const KwitansiValidateSchema = new Schema<Kwitansi>({
     },
     santriId: {
         type: Schema.Types.ObjectId,
+        ref: 'Santri',
         required: true
     },
     metodePembayaran: {

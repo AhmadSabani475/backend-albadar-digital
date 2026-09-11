@@ -21,6 +21,7 @@ import rekeningController from "../controllers/rekening.controller";
 import mutasiRekeningController from "../controllers/mutasiRekening.controller";
 import uangJajanController from "../controllers/uangJajan.controller";
 import kasirController from "../controllers/kasir.controller";
+import { dashboardController } from "../controllers/dashboard.controller";
 
 const router = express.Router();
 router.get('/users', authMiddleware, checkRole(['admin']), usersController.findAllUsers);
@@ -114,4 +115,6 @@ router.post('/rekening/uang-jajan/bagikan', authMiddleware, checkRole(['admin'])
 router.post('/kasir/transaksi', authMiddleware, checkRole(['admin']), kasirController.prosesTransaksi);
 router.get('/kasir/:id/ringkasan', authMiddleware, checkRole(['admin']), kasirController.getRingkasanData);
 router.get('/kwitansi', authMiddleware, checkRole(['admin']), kasirController.getRiwayatBySantriId);
+router.get('/dashboard/summary', authMiddleware, dashboardController.getSummary);
+
 export default router;
