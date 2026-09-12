@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import * as Yup from "yup";
 import kamarModels from "../models/kamar.models";
+import { Types } from "mongoose";
+import SantriModels from "../models/santri.models";
 
 const kamarValidateSchema = Yup.object({
     namaKamar: Yup.string().required("Nama kamar wajib diisi"),
@@ -30,7 +32,7 @@ export default {
             }
          }
         */
-        
+
         try {
             await kamarValidateSchema.validate(req.body);
             const result = await kamarModels.create(req.body);
@@ -44,11 +46,11 @@ export default {
         }
     },
     async findAll(req: Request, res: Response) {
-         /**
-         #swagger.tags = ['Kamar']
-         #swagger.summary = 'Ambil semua data kamar (beserta nama asrama)'
-         #swagger.security = [{ "bearerAuth": [] }]
-        */
+        /**
+        #swagger.tags = ['Kamar']
+        #swagger.summary = 'Ambil semua data kamar (beserta nama asrama)'
+        #swagger.security = [{ "bearerAuth": [] }]
+       */
         try {
             const result = await kamarModels.find().populate('asramaId');
             res.status(200).json({ message: "Berhasil", data: result });
@@ -57,5 +59,36 @@ export default {
             res.status(500).json({ message: err.message, data: null });
         }
     },
-
+    async deleteById(req: Request, res: Response) {
+        try {
+            const { id } = req.params;
+            if (!Types.ObjectId.isValid(id)) {
+                return res.status(400).json({
+                    message: 'ID tidak Valid',
+                    data: null
+                })
+            }
+            const santriTerkait = await SantriModels.countDocuments({ kamarId: id });
+            if (santriTerkait > 0) {
+                return res.status(400).json({
+                    message: `Tidak bisa menghapus kamar, masih ada ${santriTerkait} santri yang menempati`,
+                    data: null
+                })
+            }
+            const result = await kamarModels.findByIdAndDelete(id);
+            if (!result) {
+                return res.status(404).json({
+                    message: 'ID tidak ditemukan',
+                    data: null
+                })
+            }
+            res.status(200).json({
+                message: 'Data kamar berhasil dihapus',
+                data: result
+            })
+        } catch (error) {
+            const err = error as unknown as Error;
+            res.status(500).json({ message: err.message, data: null });
+        }
+    }
 }

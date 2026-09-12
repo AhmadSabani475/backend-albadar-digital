@@ -7,6 +7,7 @@ import TingkatNgajiModel, { TingkatNgaji } from "../models/tingkatngaji.models";
 const tingkatNgajiValidateSchema = Yup.object({
     urutan: Yup.number().required("Urutan wajib diisi").min(1).max(6, "Tingkat ngaji maksimal 6"),
     nama: Yup.string().required("Nama tingkat ngaji wajib diisi"),
+    isCheckpoint: Yup.boolean().optional().default(false),
 })
 
 export default {

@@ -45,6 +45,7 @@ router.delete('/asrama/:id', authMiddleware, checkRole(['admin']), asramaControl
 
 router.post('/kamar', authMiddleware, checkRole(['admin']), kamarController.create);
 router.get('/kamar', authMiddleware, kamarController.findAll);
+router.delete('/kamar/:id', authMiddleware, checkRole(['admin']), kamarController.deleteById);
 
 router.get('/sekolah', authMiddleware, sekolahController.findAll);
 router.post('/sekolah', authMiddleware, checkRole(['admin']), sekolahController.create);
