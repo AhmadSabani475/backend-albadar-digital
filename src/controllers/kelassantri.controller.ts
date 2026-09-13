@@ -116,25 +116,6 @@ export default {
 
     // Endpoint utama: proses "Naik Kelas" massal dari 1 tahun ajaran ke tahun ajaran berikutnya
     async naikKelas(req: Request, res: Response) {
-        /**
-         #swagger.tags = ['KelasSantri']
-         #swagger.summary = 'Proses naik kelas massal antar tahun ajaran'
-         #swagger.security = [{ "bearerAuth": [] }]
-         #swagger.requestBody = {
-            required: true,
-            content: {
-                "application/json": {
-                    schema: {
-                        type: "object",
-                        properties: {
-                            tahunAjaranAsalId: { type: "string", example: "60d5ecb8b3b3a12345678901" },
-                            tahunAjaranTujuanId: { type: "string", example: "60d5ecb8b3b3a12345678902" }
-                        }
-                    }
-                }
-            }
-         }
-         */
         try {
             const { tahunAjaranAsalId, tahunAjaranTujuanId } = req.body;
 
@@ -149,19 +130,35 @@ export default {
                 .populate('tingkatKelasId');
 
             const naikOtomatis: any[] = [];
+            const mengulang: any[] = [];
             const perluKeputusanManual: any[] = [];
 
             for (const kelas of kelasSantriAsal) {
                 const tingkatSekarang = kelas.tingkatKelasId as any;
 
-                // Cari tingkat berikutnya DI SEKOLAH YANG SAMA
+                // Santri tinggal kelas -> tetap di tingkat yang sama, status di-reset jadi aktif
+                if (kelas.status === 'tinggal_kelas') {
+                    try {
+                        const kelasBaru = await KelasSantriModel.create({
+                            santriId: kelas.santriId,
+                            tahunAjaranId: tahunAjaranTujuanId,
+                            tingkatKelasId: tingkatSekarang._id,
+                            status: 'aktif'
+                        });
+                        mengulang.push(kelasBaru);
+                    } catch (e: any) {
+                        if (e.code !== 11000) throw e;
+                    }
+                    continue;
+                }
+
+                // Santri aktif -> cari tingkat berikutnya di sekolah yang sama
                 const tingkatBerikutnya = await TingkatKelasModel.findOne({
                     sekolahId: tingkatSekarang.sekolahId,
                     urutan: tingkatSekarang.urutan + 1
                 });
 
                 if (tingkatBerikutnya) {
-                    // Ada tingkat lanjutan di sekolah yang sama -> auto generate
                     try {
                         const kelasBaru = await KelasSantriModel.create({
                             santriId: kelas.santriId,
@@ -171,11 +168,9 @@ export default {
                         });
                         naikOtomatis.push(kelasBaru);
                     } catch (e: any) {
-                        // Skip kalau ternyata udah ada record (misal proses naik kelas dijalanin dobel)
                         if (e.code !== 11000) throw e;
                     }
                 } else {
-                    // Udah di tingkat paling akhir sekolah ini -> perlu keputusan manual pengurus
                     perluKeputusanManual.push({
                         santriId: kelas.santriId,
                         tingkatKelasSekarang: tingkatSekarang
@@ -184,14 +179,94 @@ export default {
             }
 
             return res.status(200).json({
-                message: `Proses naik kelas selesai. ${naikOtomatis.length} santri naik otomatis, ${perluKeputusanManual.length} santri butuh keputusan manual.`,
+                message: `Proses naik kelas selesai. ${naikOtomatis.length} santri naik otomatis, ${mengulang.length} santri mengulang, ${perluKeputusanManual.length} santri butuh keputusan manual.`,
                 data: {
                     naikOtomatis,
+                    mengulang,
                     perluKeputusanManual
                 }
             });
         } catch (error) {
-            const err = error as unknown as Error;
+            const err = error as Error;
+            return res.status(400).json({ message: err.message, data: null });
+        }
+    },
+    async keputusanManual(req: Request, res: Response) {
+        /**
+         #swagger.tags = ['KelasSantri']
+         #swagger.summary = 'Submit keputusan manual untuk santri di tingkat akhir sekolah (lanjut sekolah lain / alumni)'
+         #swagger.security = [{ "bearerAuth": [] }]
+         #swagger.requestBody = {
+            required: true,
+            content: {
+                "application/json": {
+                    schema: {
+                        type: "object",
+                        properties: {
+                            santriId: { type: "string" },
+                            tahunAjaranId: { type: "string" },
+                            aksi: { type: "string", enum: ["lanjut", "alumni"] },
+                            tingkatKelasId: { type: "string", description: "wajib diisi kalau aksi = lanjut" }
+                        }
+                    }
+                }
+            }
+         }
+         */
+        try {
+            const { santriId, tahunAjaranId, aksi, tingkatKelasId } = req.body;
+
+            if (!santriId || !tahunAjaranId || !aksi) {
+                return res.status(400).json({
+                    message: "santriId, tahunAjaranId, dan aksi wajib diisi",
+                    data: null
+                });
+            }
+
+            if (aksi === 'lanjut') {
+                if (!tingkatKelasId) {
+                    return res.status(400).json({
+                        message: "tingkatKelasId wajib diisi untuk aksi 'lanjut'",
+                        data: null
+                    });
+                }
+
+                const tingkatKelas = await TingkatKelasModel.findById(tingkatKelasId);
+                if (!tingkatKelas) {
+                    return res.status(404).json({ message: "Tingkat Kelas Tidak Ditemukan", data: null });
+                }
+
+                const result = await KelasSantriModel.create({
+                    santriId,
+                    tahunAjaranId,
+                    tingkatKelasId,
+                    status: 'aktif'
+                });
+
+                return res.status(201).json({
+                    message: "Santri berhasil dilanjutkan ke tingkat/sekolah baru",
+                    data: result
+                });
+            }
+
+            if (aksi === 'alumni') {
+                await SantriModel.findByIdAndUpdate(santriId, { status: 'alumni' });
+
+                return res.status(200).json({
+                    message: "Santri berhasil ditandai sebagai alumni",
+                    data: null
+                });
+            }
+
+            return res.status(400).json({ message: "Aksi tidak valid", data: null });
+        } catch (error: any) {
+            if (error.code === 11000) {
+                return res.status(400).json({
+                    message: "Santri ini sudah punya kelas di tahun ajaran tersebut",
+                    data: null
+                });
+            }
+            const err = error as Error;
             return res.status(400).json({ message: err.message, data: null });
         }
     },

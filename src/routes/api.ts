@@ -74,6 +74,12 @@ router.get('/kelas-santri', authMiddleware, kelassantriController.findAll);
 router.delete('/kelas-santri/:id', authMiddleware, checkRole(['admin']), kelassantriController.delete);
 router.post('/kelas-santri/naik-kelas', authMiddleware, checkRole(['admin']), kelassantriController.naikKelas);
 
+router.post('/kelas-santri/naik-kelas', authMiddleware, checkRole(['admin']), kelassantriController.naikKelas);
+router.post('/kelas-santri/keputusan-manual', authMiddleware, checkRole(['admin']), kelassantriController.keputusanManual);
+
+router.post('/riwayat-kelas-ngaji/naik-kelas', authMiddleware, checkRole(['admin']), riwayatkelasngajiController.naikKelasNgaji);
+router.post('/riwayat-kelas-ngaji/keputusan-manual', authMiddleware, checkRole(['admin']), riwayatkelasngajiController.keputusanManual);
+
 router.post('/riwayat-kelas-ngaji', authMiddleware, checkRole(['admin']), riwayatkelasngajiController.create);
 router.get('/riwayat-kelas-ngaji', authMiddleware, riwayatkelasngajiController.findAll);
 router.put('/riwayat-kelas-ngaji/:id', authMiddleware, checkRole(['admin']), riwayatkelasngajiController.update);
