@@ -122,7 +122,7 @@ export default {
                         referensiId: item.tagihanId,
                         label: (hasil.tagihan?.jenisTagihanId as any)?.nama ?? 'Tagihan',
                         nominal: item.nominal,
-                        keterangan: item.keterangan,
+                        keterangan: item.keterangan || (hasil.tagihan?.periode ? `Periode: ${hasil.tagihan.periode}` : undefined),
                     });
                     totalNominal += item.nominal;
                 } else {
@@ -228,6 +228,8 @@ export default {
                         nominalTagihan: t.nominalTagihan,
                         sisaTagihan,
                         cicilanKe,
+                        periode: t.periode,
+                        jatuhTempo: t.jatuhTempo,
                         status: t.status,
                     };
                 })
