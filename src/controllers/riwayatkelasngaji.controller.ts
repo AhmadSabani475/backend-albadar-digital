@@ -174,21 +174,24 @@ export default {
             const riwayatAsal = await RiwayatKelasNgajiModel.find({
                 tahunAjaranId: tahunAjaranAsalId,
                 tingkatNgajiId: { $ne: null }
-            }).populate('tingkatNgajiId');
+            }).populate('tingkatNgajiId').populate('santriId', 'namaLengkap nis');
 
             const naikOtomatis: any[] = [];
             const perluKeputusanManual: any[] = [];
 
             for (const riwayat of riwayatAsal) {
                 const tingkatSekarang = riwayat.tingkatNgajiId as any;
+                const santri = riwayat.santriId as any;   // ← sekarang objek, bukan ID mentah
 
                 // Cek checkpoint DULU, sebelum nyari tingkat berikutnya
                 if (tingkatSekarang.isCheckpoint) {
                     perluKeputusanManual.push({
-                        santriId: riwayat.santriId,
+                        santriId: santri._id,
+                        namaSantri: santri.namaLengkap,   // ← ditambahin
+                        nis: santri.nis,                    // ← ditambahin
                         tingkatNgajiSekarang: tingkatSekarang
                     });
-                    continue; // skip, jangan diproses otomatis
+                    continue;
                 }
 
                 const tingkatBerikutnya = await TingkatNgajiModel.findOne({ urutan: tingkatSekarang.urutan + 1 });
@@ -196,15 +199,16 @@ export default {
                 try {
                     if (tingkatBerikutnya) {
                         const baru = await RiwayatKelasNgajiModel.create({
-                            santriId: riwayat.santriId,
+                            santriId: santri._id,
                             tahunAjaranId: tahunAjaranTujuanId,
                             tingkatNgajiId: tingkatBerikutnya._id,
                         });
                         naikOtomatis.push(baru);
                     } else {
-                        // Fallback, kalau ada tingkat tanpa isCheckpoint tapi ternyata tingkat terakhir
                         perluKeputusanManual.push({
-                            santriId: riwayat.santriId,
+                            santriId: santri._id,
+                            namaSantri: santri.namaLengkap,   // ← ditambahin
+                            nis: santri.nis,                    // ← ditambahin
                             tingkatNgajiSekarang: tingkatSekarang
                         });
                     }

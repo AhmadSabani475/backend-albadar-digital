@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon src/index.ts",
-    "docs": "ts-node src/docs/swagger.ts"
+    "docs": "ts-node src/docs/swagger.ts",
+    "seed:santri-kelas": "ts-node src/script/seedSantriDenganKelas.ts"
   },
   "keywords": [],
   "author": "",

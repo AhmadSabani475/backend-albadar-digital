@@ -127,7 +127,8 @@ export default {
             }
 
             const kelasSantriAsal = await KelasSantriModel.find({ tahunAjaranId: tahunAjaranAsalId })
-                .populate('tingkatKelasId');
+                .populate('tingkatKelasId')
+                .populate('santriId', 'namaLengkap nis');   // ← ditambahin
 
             const naikOtomatis: any[] = [];
             const mengulang: any[] = [];
@@ -135,12 +136,13 @@ export default {
 
             for (const kelas of kelasSantriAsal) {
                 const tingkatSekarang = kelas.tingkatKelasId as any;
+                const santri = kelas.santriId as any;   // ← sekarang udah objek, bukan cuma ID
 
                 // Santri tinggal kelas -> tetap di tingkat yang sama, status di-reset jadi aktif
                 if (kelas.status === 'tinggal_kelas') {
                     try {
                         const kelasBaru = await KelasSantriModel.create({
-                            santriId: kelas.santriId,
+                            santriId: santri._id,
                             tahunAjaranId: tahunAjaranTujuanId,
                             tingkatKelasId: tingkatSekarang._id,
                             status: 'aktif'
@@ -161,7 +163,7 @@ export default {
                 if (tingkatBerikutnya) {
                     try {
                         const kelasBaru = await KelasSantriModel.create({
-                            santriId: kelas.santriId,
+                            santriId: santri._id,
                             tahunAjaranId: tahunAjaranTujuanId,
                             tingkatKelasId: tingkatBerikutnya._id,
                             status: 'aktif'
@@ -172,7 +174,9 @@ export default {
                     }
                 } else {
                     perluKeputusanManual.push({
-                        santriId: kelas.santriId,
+                        santriId: santri._id,
+                        namaSantri: santri.namaLengkap,   // ← ditambahin
+                        nis: santri.nis,                    // ← bonus, sekalian ada
                         tingkatKelasSekarang: tingkatSekarang
                     });
                 }
