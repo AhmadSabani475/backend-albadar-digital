@@ -185,8 +185,8 @@ export default {
             const { id } = req.params;
             if (!Types.ObjectId.isValid(id)) {
                 return res.status(400).json({
-                    message: "ID Not Valid",
-                    success: false
+                    message: "ID tidak valid",
+                    data: null
                 })
             }
             const santri = await SantriModels.findById(id).populate({
@@ -196,12 +196,12 @@ export default {
 
             if (!santri) {
                 return res.status(404).json({
-                    message: "ID Santri Tidak ditemukan",
-                    success: false
+                    message: "Santri tidak ditemukan",
+                    data: null
                 });
             };
             return res.status(200).json({
-                message: "Success Get Santri By Id",
+                message: "Data santri berhasil diambil",
                 data: santri
             })
         } catch (error) {
@@ -235,15 +235,15 @@ export default {
             const { id } = req.params;
             if (!Types.ObjectId.isValid(id)) {
                 return res.status(400).json({
-                    message: "ID Not Valid",
-                    success: false
+                    message: "ID tidak valid",
+                    data: null
                 })
             }
             const santriExist = await SantriModels.findById(id);
             if (!santriExist) {
                 return res.status(404).json({
-                    message: "ID Santri Tidak ditemukan",
-                    success: false
+                    message: "Santri tidak ditemukan",
+                    data: null
                 });
             };
 
@@ -261,7 +261,7 @@ export default {
                 const jumlahSantriDiKamar = await SantriModels.countDocuments({ kamarId: santri.kamarId });
                 if (jumlahSantriDiKamar >= kamar.kapasitas) {
                     return res.status(400).json({
-                        message: "kamar sudah penuh",
+                        message: "Kamar sudah penuh",
                         data: null
                     })
                 }
@@ -283,7 +283,7 @@ export default {
             )
 
             return res.status(200).json({
-                message: "Santri Success Updated",
+                message: "Santri berhasil diupdate",
                 data: santriUpdated
             })
         } catch (error) {
@@ -319,20 +319,20 @@ export default {
             const { id } = req.params;
             if (!Types.ObjectId.isValid(id)) {
                 return res.status(400).json({
-                    message: "ID Not Valid",
-                    success: false
+                    message: "ID tidak valid",
+                    data: null
                 })
             }
             const deleteSantri = await SantriModels.findByIdAndDelete(id);
             if (!deleteSantri) {
                 return res.status(404).json({
-                    message: "Santri Tidak Ditemukan",
-                    success: false
+                    message: "Santri tidak ditemukan",
+                    data: null
                 })
             }
             return res.status(200).json({
-                message: "Data Santri Berhasil dihapus",
-                success: true
+                message: "Santri berhasil dihapus",
+                data: null
             })
         } catch (error) {
             const err = error as unknown as Error;

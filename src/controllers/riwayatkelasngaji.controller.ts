@@ -1,4 +1,3 @@
-// controllers/riwayatKelasNgaji.controllers.ts
 import { Request, Response } from "express";
 import * as Yup from "yup";
 import { Types } from "mongoose";
@@ -16,8 +15,6 @@ const riwayatKelasNgajiValidateSchema = Yup.object({
 })
 
 export default {
-    // Assign manual — dipake pas santri baru masuk, atau isi statusLain
-    // buat santri yang udah lulus tingkat 6
     async create(req: Request, res: Response) {
         /**
          #swagger.tags = ['RiwayatKelasNgaji']
@@ -160,7 +157,6 @@ export default {
         }
     },
 
-    // Proses "Naik Kelas Ngaji" massal
     async naikKelasNgaji(req: Request, res: Response) {
         try {
             const { tahunAjaranAsalId, tahunAjaranTujuanId } = req.body;
@@ -181,14 +177,13 @@ export default {
 
             for (const riwayat of riwayatAsal) {
                 const tingkatSekarang = riwayat.tingkatNgajiId as any;
-                const santri = riwayat.santriId as any;   // ← sekarang objek, bukan ID mentah
+                const santri = riwayat.santriId as any;
 
-                // Cek checkpoint DULU, sebelum nyari tingkat berikutnya
                 if (tingkatSekarang.isCheckpoint) {
                     perluKeputusanManual.push({
                         santriId: santri._id,
-                        namaSantri: santri.namaLengkap,   // ← ditambahin
-                        nis: santri.nis,                    // ← ditambahin
+                        namaSantri: santri.namaLengkap,
+                        nis: santri.nis,
                         tingkatNgajiSekarang: tingkatSekarang
                     });
                     continue;
@@ -207,8 +202,8 @@ export default {
                     } else {
                         perluKeputusanManual.push({
                             santriId: santri._id,
-                            namaSantri: santri.namaLengkap,   // ← ditambahin
-                            nis: santri.nis,                    // ← ditambahin
+                            namaSantri: santri.namaLengkap,
+                            nis: santri.nis,
                             tingkatNgajiSekarang: tingkatSekarang
                         });
                     }

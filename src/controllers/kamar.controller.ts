@@ -53,7 +53,7 @@ export default {
        */
         try {
             const result = await kamarModels.find().populate('asramaId');
-            res.status(200).json({ message: "Berhasil", data: result });
+            res.status(200).json({ message: "Data kamar berhasil diambil", data: result });
         } catch (error) {
             const err = error as unknown as Error;
             res.status(500).json({ message: err.message, data: null });
@@ -64,7 +64,7 @@ export default {
             const { id } = req.params;
             if (!Types.ObjectId.isValid(id)) {
                 return res.status(400).json({
-                    message: 'ID tidak Valid',
+                    message: 'ID tidak valid',
                     data: null
                 })
             }

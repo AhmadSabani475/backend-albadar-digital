@@ -22,7 +22,6 @@ export default {
             const data = req.body as unknown as TahunAjaran;
             await tahunAjaranValidateSchema.validate(data);
 
-            // Kalau tahun ajaran baru ini di-set aktif, matiin dulu semua yang lain
             if (data.is_active) {
                 await TahunAjaranModel.updateMany({}, { is_active: false });
             }
@@ -123,7 +122,6 @@ export default {
             const data = req.body as unknown as TahunAjaran;
             await tahunAjaranValidateSchema.validate(data);
 
-            // Sama kayak create: kalau di-set aktif, matiin yang lain dulu (kecuali dirinya sendiri)
             if (data.is_active) {
                 await TahunAjaranModel.updateMany(
                     { _id: { $ne: id } },

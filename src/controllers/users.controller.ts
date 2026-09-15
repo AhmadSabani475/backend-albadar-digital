@@ -4,7 +4,7 @@ import userModels from "../models/user.model";
 import SantriModels from "../models/santri.models";
 type TCreateUser = {
     username: string;
-    role: 'admin' | 'pengurus';
+    role: 'admin' | 'bendahara';
     santriId?: string;
 };
 
@@ -13,7 +13,7 @@ const createUserValidateSchema = Yup.object({
         .required("Username wajib diisi")
         .min(3, "Username minimal 3 karakter"),
     role: Yup.string()
-        .oneOf(["admin", "pengurus"], "Role harus admin atau pengurus")
+        .oneOf(["admin", "bendahara"], "Role harus admin atau bendahara")
         .required("Role wajib diisi"),
     santriId: Yup.string().optional()
 })
@@ -66,7 +66,7 @@ export default {
                 const santri = await SantriModels.findById(santriId);
                 if (!santri) {
                     return res.status(404).json({
-                        message: "Santri Not Found",
+                        message: "Santri tidak ditemukan",
                         data: null
                     })
                 }
@@ -88,7 +88,7 @@ export default {
                 is_active: false
             });
             res.status(201).json({
-                message: "user berhasil dibuat",
+                message: "User berhasil dibuat",
                 data: {
                     ...result.toJSON(),
                     generatedPassword
@@ -111,7 +111,7 @@ export default {
         try {
             const result = await userModels.find().populate('santriId');
             return res.status(200).json({
-                message: "Get Users Success",
+                message: "Data user berhasil diambil",
                 data: result
             })
         } catch (error) {
@@ -139,19 +139,19 @@ export default {
             const user = await userModels.findByIdAndDelete(id);
             if (!user) {
                 return res.status(404).json({
-                    message: "User Not Found",
-                    success: false
+                    message: "User tidak ditemukan",
+                    data: null
                 })
             }
             return res.status(200).json({
-                message: "User Deleted",
-                success: true
+                message: "User berhasil dihapus",
+                data: null
             })
         } catch (error) {
             const err = error as unknown as Error;
             res.status(400).json({
                 message: err.message,
-                success: false
+                data: null
             })
         }
     },
@@ -167,7 +167,7 @@ export default {
             const user = await userModels.findById(id);
             if (!user) {
                 return res.status(404).json({
-                    message: 'user tidak ditemukan',
+                    message: "User tidak ditemukan",
                     data: null
                 })
             }
@@ -176,7 +176,7 @@ export default {
             user.is_active = false;
             await user.save();
             return res.status(200).json({
-                message: 'password berhasil di reset',
+                message: "Password berhasil direset",
                 data: {
                     ...user.toJSON(),
                     generatedPassword
@@ -186,7 +186,7 @@ export default {
             const err = error as unknown as Error;
             res.status(400).json({
                 message: err.message,
-                success: false
+                data: null
             })
         }
     }

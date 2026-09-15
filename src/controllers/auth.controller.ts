@@ -31,7 +31,7 @@ export default {
 
             if (!user) {
                 return res.status(403).json({
-                    message: "User Not Found",
+                    message: "User tidak ditemukan",
                     data: null
                 });
             };
@@ -39,7 +39,7 @@ export default {
 
             if (!validatePassword) {
                 return res.status(403).json({
-                    message: "Debug: Password salah / Hash tidak cocok",
+                    message: "Username atau password salah",
                     data: null
                 });
             }
@@ -48,7 +48,7 @@ export default {
                 role: user.role
             })
             return res.status(200).json({
-                message: 'login success',
+                message: "Login berhasil",
                 data: token
             })
         } catch (error) {
@@ -70,7 +70,7 @@ export default {
             const user = req.user;
             const result = await userModels.findById(user?.id).populate('santriId');
             res.status(200).json({
-                message: 'Success get User',
+                message: "Data user berhasil diambil",
                 data: result
             })
         } catch (error) {

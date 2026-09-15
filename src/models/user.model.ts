@@ -22,8 +22,8 @@ const UserSchema = new schema<User>({
     },
     role: {
         type: schema.Types.String,
-        enum: ['admin', 'pengurus'],
-        default: "pengurus"
+        enum: ['admin', 'bendahara'],
+        default: "bendahara"
     },
     is_active: {
         type: schema.Types.Boolean,
@@ -35,7 +35,7 @@ const UserSchema = new schema<User>({
 })
 UserSchema.pre('save', async function (next) {
     const user = this;
-    if(user.isModified('password')){
+    if (user.isModified('password')) {
         user.password = await encrypt(user.password);
     }
     next();

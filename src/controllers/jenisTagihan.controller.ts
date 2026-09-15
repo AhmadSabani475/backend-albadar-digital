@@ -39,7 +39,7 @@ export default {
             await JenisTagihanValidateSchema.validate(req.body as JenisTagihan);
             const result = await JenisTagihanModel.create(req.body);
             res.status(201).json({
-                message: 'Tagihan Berhasil dibuat',
+                message: 'Jenis tagihan berhasil ditambahkan',
                 data: result
             })
         } catch (error) {
@@ -56,7 +56,7 @@ export default {
         try {
             const result = await JenisTagihanModel.find();
             res.status(200).json({
-                message: 'Data Tagihan Berhasil diambil',
+                message: 'Data jenis tagihan berhasil diambil',
                 data: result
             })
         } catch (error) {
@@ -79,19 +79,19 @@ export default {
             const { id } = req.params;
             if (!Types.ObjectId.isValid(id)) {
                 return res.status(400).json({
-                    message: "ID Not Valid",
+                    message: "ID tidak valid",
                     data: null
                 })
             }
             const tagihan = await JenisTagihanModel.findById(id);
             if (!tagihan) {
                 return res.status(404).json({
-                    message: "ID Tagihan Tidak ditemukan",
+                    message: "Jenis tagihan tidak ditemukan",
                     data: null
                 });
             }
             res.status(200).json({
-                message: 'Tagihan Berhasil diambil',
+                message: 'Data jenis tagihan berhasil diambil',
                 data: tagihan
             })
         } catch (error) {
@@ -140,7 +140,7 @@ export default {
             const tagihanExist = await JenisTagihanModel.findById(id);
             if (!tagihanExist) {
                 return res.status(404).json({
-                    message: "ID Tagihan Tidak ditemukan",
+                    message: "Jenis tagihan tidak ditemukan",
                     data: null
                 });
             }
@@ -151,7 +151,7 @@ export default {
                 { new: true, runValidators: true }
             );
             return res.status(200).json({
-                message: "Tagihan Success Updated",
+                message: 'Jenis tagihan berhasil diupdate',
                 data: tagihanUpdated
             });
         } catch (error) {
@@ -176,20 +176,20 @@ export default {
             const { id } = req.params;
             if (!Types.ObjectId.isValid(id)) {
                 return res.status(400).json({
-                    message: "ID Not Valid",
+                    message: "ID tidak valid",
                     data: null
                 })
             }
             const deleteTagihan = await JenisTagihanModel.findByIdAndDelete(id);
             if (!deleteTagihan) {
                 return res.status(404).json({
-                    message: "Tagihan Tidak Ditemukan",
+                    message: "Jenis tagihan tidak ditemukan",
                     data: null
                 })
             }
             return res.status(200).json({
-                message: "Data Tagihan Berhasil dihapus",
-                success: true
+                message: 'Jenis tagihan berhasil dihapus',
+                data: null
             })
         } catch (error) {
             const err = error as unknown as Error;

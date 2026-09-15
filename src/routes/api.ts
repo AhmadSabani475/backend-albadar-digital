@@ -73,11 +73,8 @@ router.post('/kelas-santri', authMiddleware, checkRole(['admin']), kelassantriCo
 router.get('/kelas-santri', authMiddleware, kelassantriController.findAll);
 router.delete('/kelas-santri/:id', authMiddleware, checkRole(['admin']), kelassantriController.delete);
 router.post('/kelas-santri/naik-kelas', authMiddleware, checkRole(['admin']), kelassantriController.naikKelas);
-
-router.post('/kelas-santri/naik-kelas', authMiddleware, checkRole(['admin']), kelassantriController.naikKelas);
 router.post('/kelas-santri/keputusan-manual', authMiddleware, checkRole(['admin']), kelassantriController.keputusanManual);
 
-router.post('/riwayat-kelas-ngaji/naik-kelas', authMiddleware, checkRole(['admin']), riwayatkelasngajiController.naikKelasNgaji);
 router.post('/riwayat-kelas-ngaji/keputusan-manual', authMiddleware, checkRole(['admin']), riwayatkelasngajiController.keputusanManual);
 
 router.post('/riwayat-kelas-ngaji', authMiddleware, checkRole(['admin']), riwayatkelasngajiController.create);
@@ -91,37 +88,37 @@ router.get('/wilayah/regencies/:provinceId', authMiddleware, wilayahController.g
 router.get('/wilayah/districts/:regencyId', authMiddleware, wilayahController.getDistricts);
 router.get('/wilayah/villages/:districtId', authMiddleware, wilayahController.getVillages);
 
-router.get('/jenis-tagihan', authMiddleware, checkRole(['admin']), jenisTagihanController.findAll);
-router.post('/jenis-tagihan', authMiddleware, checkRole(['admin']), jenisTagihanController.create);
-router.get('/jenis-tagihan/:id', authMiddleware, checkRole(['admin']), jenisTagihanController.findById);
-router.delete('/jenis-tagihan/:id', authMiddleware, checkRole(['admin']), jenisTagihanController.deleteById);
-router.put('/jenis-tagihan/:id', authMiddleware, checkRole(['admin']), jenisTagihanController.editById);
+router.get('/jenis-tagihan', authMiddleware, checkRole(['admin', 'bendahara']), jenisTagihanController.findAll);
+router.post('/jenis-tagihan', authMiddleware, checkRole(['admin', 'bendahara']), jenisTagihanController.create);
+router.get('/jenis-tagihan/:id', authMiddleware, checkRole(['admin', 'bendahara']), jenisTagihanController.findById);
+router.delete('/jenis-tagihan/:id', authMiddleware, checkRole(['admin', 'bendahara']), jenisTagihanController.deleteById);
+router.put('/jenis-tagihan/:id', authMiddleware, checkRole(['admin', 'bendahara']), jenisTagihanController.editById);
 
-router.get('/tarif-khusus', authMiddleware, checkRole(['admin']), tarifKhususController.findAll);
-router.post('/tarif-khusus', authMiddleware, checkRole(['admin']), tarifKhususController.create);
-router.delete('/tarif-khusus/:id', authMiddleware, checkRole(['admin']), tarifKhususController.deleteById);
+router.get('/tarif-khusus', authMiddleware, checkRole(['admin', 'bendahara']), tarifKhususController.findAll);
+router.post('/tarif-khusus', authMiddleware, checkRole(['admin', 'bendahara']), tarifKhususController.create);
+router.delete('/tarif-khusus/:id', authMiddleware, checkRole(['admin', 'bendahara']), tarifKhususController.deleteById);
 
-router.post('/tagihan/generate-bulk', authMiddleware, checkRole(['admin']), tagihanController.createBulk);
-router.get('/tagihan', authMiddleware, checkRole(['admin']), tagihanController.findAll);
-router.post('/tagihan', authMiddleware, checkRole(['admin']), tagihanController.create);
-router.get('/tagihan/:id', authMiddleware, checkRole(['admin']), tagihanController.findById);
+router.post('/tagihan/generate-bulk', authMiddleware, checkRole(['admin', 'bendahara']), tagihanController.createBulk);
+router.get('/tagihan', authMiddleware, checkRole(['admin', 'bendahara']), tagihanController.findAll);
+router.post('/tagihan', authMiddleware, checkRole(['admin', 'bendahara']), tagihanController.create);
+router.get('/tagihan/:id', authMiddleware, checkRole(['admin', 'bendahara']), tagihanController.findById);
 
-router.get('/pembayaran', authMiddleware, checkRole(['admin']), pembayaranController.findAll);
-router.post('/pembayaran', authMiddleware, checkRole(['admin']), pembayaranController.create);
+router.get('/pembayaran', authMiddleware, checkRole(['admin', 'bendahara']), pembayaranController.findAll);
+router.post('/pembayaran', authMiddleware, checkRole(['admin', 'bendahara']), pembayaranController.create);
 
-router.get('/rekening', authMiddleware, checkRole(['admin']), rekeningController.findAll);
-router.get('/rekening/:id', authMiddleware, checkRole(['admin']), rekeningController.findById);
-router.post('/rekening', authMiddleware, checkRole(['admin']), rekeningController.create);
+router.get('/rekening', authMiddleware, checkRole(['admin', 'bendahara']), rekeningController.findAll);
+router.get('/rekening/:id', authMiddleware, checkRole(['admin', 'bendahara']), rekeningController.findById);
+router.post('/rekening', authMiddleware, checkRole(['admin', 'bendahara']), rekeningController.create);
 
-router.post('/rekening/mutasi', authMiddleware, checkRole(['admin']), mutasiRekeningController.create);
-router.get('/rekening/:id/mutasi', authMiddleware, checkRole(['admin']), mutasiRekeningController.findMutasiById);
+router.post('/rekening/mutasi', authMiddleware, checkRole(['admin', 'bendahara']), mutasiRekeningController.create);
+router.get('/rekening/:id/mutasi', authMiddleware, checkRole(['admin', 'bendahara']), mutasiRekeningController.findMutasiById);
 
-router.get('/rekening/uang-jajan/hari-ini', authMiddleware, checkRole(['admin']), uangJajanController.getStatusHariIni);
-router.post('/rekening/uang-jajan/bagikan', authMiddleware, checkRole(['admin']), uangJajanController.bagikan);
+router.get('/rekening/uang-jajan/hari-ini', authMiddleware, checkRole(['admin', 'bendahara']), uangJajanController.getStatusHariIni);
+router.post('/rekening/uang-jajan/bagikan', authMiddleware, checkRole(['admin', 'bendahara']), uangJajanController.bagikan);
 
-router.post('/kasir/transaksi', authMiddleware, checkRole(['admin']), kasirController.prosesTransaksi);
-router.get('/kasir/:id/ringkasan', authMiddleware, checkRole(['admin']), kasirController.getRingkasanData);
-router.get('/kwitansi', authMiddleware, checkRole(['admin']), kasirController.getRiwayatBySantriId);
+router.post('/kasir/transaksi', authMiddleware, checkRole(['admin', 'bendahara']), kasirController.prosesTransaksi);
+router.get('/kasir/:id/ringkasan', authMiddleware, checkRole(['admin', 'bendahara']), kasirController.getRingkasanData);
+router.get('/kwitansi', authMiddleware, checkRole(['admin', 'bendahara']), kasirController.getRiwayatBySantriId);
 router.get('/dashboard/summary', authMiddleware, dashboardController.getSummary);
 
 export default router;

@@ -40,7 +40,7 @@ export default {
                 saldoCukup: r.nominalHarian != null && r.saldo >= r.nominalHarian
             }))
 
-            res.status(200).json({ message: "OK", data })
+            res.status(200).json({ message: "Data status uang jajan berhasil diambil", data })
         } catch (error) {
             const err = error as Error;
             res.status(400).json({ message: err.message, data: null });

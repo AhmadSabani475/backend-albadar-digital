@@ -14,8 +14,6 @@ const kelasSantriValidateSchema = Yup.object({
 })
 
 export default {
-    // Assign kelas manual — dipake pas santri baru masuk, atau keputusan manual
-    // buat santri yang lulus dari tingkat paling akhir (lanjut MA/SMK/keluar)
     async create(req: Request, res: Response) {
         /**
          #swagger.tags = ['KelasSantri']
@@ -62,7 +60,6 @@ export default {
         }
     },
 
-    // List, bisa difilter by tahunAjaranId / santriId / tingkatKelasId
     async findAll(req: Request, res: Response) {
         /**
          #swagger.tags = ['KelasSantri']
@@ -101,7 +98,7 @@ export default {
         try {
             const { id } = req.params;
             if (!Types.ObjectId.isValid(id)) {
-                return res.status(400).json({ message: "ID Not Valid", data: null });
+                return res.status(400).json({ message: "ID tidak valid", data: null });
             }
             const result = await KelasSantriModel.findByIdAndDelete(id);
             if (!result) {
@@ -114,7 +111,6 @@ export default {
         }
     },
 
-    // Endpoint utama: proses "Naik Kelas" massal dari 1 tahun ajaran ke tahun ajaran berikutnya
     async naikKelas(req: Request, res: Response) {
         try {
             const { tahunAjaranAsalId, tahunAjaranTujuanId } = req.body;
@@ -128,7 +124,7 @@ export default {
 
             const kelasSantriAsal = await KelasSantriModel.find({ tahunAjaranId: tahunAjaranAsalId })
                 .populate('tingkatKelasId')
-                .populate('santriId', 'namaLengkap nis');   // ← ditambahin
+                .populate('santriId', 'namaLengkap nis');
 
             const naikOtomatis: any[] = [];
             const mengulang: any[] = [];
@@ -136,9 +132,8 @@ export default {
 
             for (const kelas of kelasSantriAsal) {
                 const tingkatSekarang = kelas.tingkatKelasId as any;
-                const santri = kelas.santriId as any;   // ← sekarang udah objek, bukan cuma ID
+                const santri = kelas.santriId as any;
 
-                // Santri tinggal kelas -> tetap di tingkat yang sama, status di-reset jadi aktif
                 if (kelas.status === 'tinggal_kelas') {
                     try {
                         const kelasBaru = await KelasSantriModel.create({
@@ -154,7 +149,6 @@ export default {
                     continue;
                 }
 
-                // Santri aktif -> cari tingkat berikutnya di sekolah yang sama
                 const tingkatBerikutnya = await TingkatKelasModel.findOne({
                     sekolahId: tingkatSekarang.sekolahId,
                     urutan: tingkatSekarang.urutan + 1
@@ -175,8 +169,8 @@ export default {
                 } else {
                     perluKeputusanManual.push({
                         santriId: santri._id,
-                        namaSantri: santri.namaLengkap,   // ← ditambahin
-                        nis: santri.nis,                    // ← bonus, sekalian ada
+                        namaSantri: santri.namaLengkap,
+                        nis: santri.nis,
                         tingkatKelasSekarang: tingkatSekarang
                     });
                 }

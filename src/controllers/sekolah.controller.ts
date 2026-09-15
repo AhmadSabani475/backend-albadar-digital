@@ -32,7 +32,7 @@ export default {
             await sekolahValidateSchema.validate(req.body);
             const result = await SekolahModel.create(req.body);
             return res.status(201).json({
-                message: 'Sekolah Berhasil ditambahkan',
+                message: 'Sekolah berhasil ditambahkan',
                 data: result
             });
         } catch (error) {
@@ -49,7 +49,7 @@ export default {
         try {
             const result = await SekolahModel.find();
             return res.status(200).json({
-                message: 'data berhasil diambil',
+                message: 'Data sekolah berhasil diambil',
                 data: result
             })
         } catch (error) {

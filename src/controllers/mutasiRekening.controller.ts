@@ -45,7 +45,7 @@ export default {
             const hasil = await prosesMutasi({ ...request, dicatatOleh });
 
             return res.status(201).json({
-                message: 'Data berhasil ditambahkan',
+                message: 'Mutasi rekening berhasil dicatat',
                 data: hasil
             });
         } catch (error) {
@@ -82,7 +82,7 @@ export default {
                 .sort({ tanggal: -1 });
 
             return res.status(200).json({
-                message: 'Riwayat Mutasi Berhasil diambil',
+                message: 'Riwayat mutasi berhasil diambil',
                 data: mutasi
             })
         } catch (error) {

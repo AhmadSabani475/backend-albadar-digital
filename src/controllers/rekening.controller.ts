@@ -72,7 +72,7 @@ export default {
 
             const result = await RekeningModel.find(filter).populate('santriId', 'namaLengkap');
             return res.status(200).json({
-                message: 'Data Berhasil diambil',
+                message: 'Data rekening berhasil diambil',
                 data: result
             })
         } catch (error) {
@@ -106,7 +106,7 @@ export default {
             });
             if (!result) {
                 return res.status(404).json({
-                    message: 'Rekening Tidak ditemukan',
+                    message: 'Rekening tidak ditemukan',
                     data: null
                 })
             }

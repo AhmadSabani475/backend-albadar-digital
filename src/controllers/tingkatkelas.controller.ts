@@ -37,7 +37,6 @@ export default {
                 data: tingkatKelasBaru
             });
         } catch (error: any) {
-            // Kode 11000 = duplicate key error dari compound index sekolahId+urutan
             if (error.code === 11000) {
                 return res.status(400).json({
                     message: "Urutan tingkat kelas ini sudah dipakai di sekolah tersebut",

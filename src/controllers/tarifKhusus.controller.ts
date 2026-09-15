@@ -95,13 +95,13 @@ export default {
             const result = await TarifKhususModel.findByIdAndDelete(id)
             if (!result) {
                 return res.status(404).json({
-                    message: "Tarif Khusus tidak ditemukan",
+                    message: 'Tarif khusus tidak ditemukan',
                     data: null
                 })
             }
 
             return res.status(200).json({
-                message: 'Tarif Berhasil dihapus',
+                message: 'Tarif khusus berhasil dihapus',
                 data: result
             })
         } catch (error) {

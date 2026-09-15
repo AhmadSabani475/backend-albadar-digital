@@ -5,6 +5,6 @@ export interface User {
     username: string;
     password: string;
     santriId?: Santri; 
-    role: 'admin' | 'pengurus';
+    role: 'admin' | 'bendahara';
     is_active: boolean;
 }
