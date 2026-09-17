@@ -53,6 +53,9 @@ const KwitansiValidateSchema = new Schema<Kwitansi>({
         required: true,
         default: 'cash'
     },
+    buktiTransferUrl: {
+        type: Schema.Types.String
+    },
     items: {
         type: [KwitansiItemSchema],
         required: true

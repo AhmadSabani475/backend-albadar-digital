@@ -122,6 +122,7 @@ router.post('/rekening/uang-jajan/bagikan', authMiddleware, checkRole(['admin', 
 router.post('/kasir/transaksi', authMiddleware, checkRole(['admin', 'bendahara']), kasirController.prosesTransaksi);
 router.get('/kasir/:id/ringkasan', authMiddleware, checkRole(['admin', 'bendahara']), kasirController.getRingkasanData);
 router.get('/kwitansi', authMiddleware, checkRole(['admin', 'bendahara']), kasirController.getRiwayatBySantriId);
+router.patch('/kwitansi/:id/bukti-transfer', authMiddleware, checkRole(['admin', 'bendahara']), kasirController.updateBuktiTransfer);
 router.get('/dashboard/summary', authMiddleware, dashboardController.getSummary);
 
 router.get('/laporan/tunggakan', authMiddleware, checkRole(['admin', 'bendahara']), laporanController.getAllTunggakan);

@@ -57,6 +57,7 @@ const ItemSchema = Yup.object({
 const KasirTransaksiSchema = Yup.object({
     santriId: Yup.string().required(),
     metodePembayaran: Yup.string().oneOf(['cash', 'transfer']).default('cash').required(),
+    buktiTransferUrl: Yup.string().optional(),
     items: Yup.array().of(ItemSchema).min(1, 'Minimal 1 item transaksi').required(),
 });
 
@@ -166,6 +167,7 @@ export default {
                     saldoSnapshot,
                     totalNominal,
                     metodePembayaran: request.metodePembayaran,
+                    buktiTransferUrl: request.buktiTransferUrl,
                     diCatatOleh: dicatatOleh,
                 }],
                 { session }
@@ -250,34 +252,129 @@ export default {
         }
     },
 
+    async updateBuktiTransfer(req: Request, res: Response) {
+        /**
+         #swagger.tags = ['Kasir']
+         #swagger.summary = 'Perbarui URL bukti transfer kwitansi'
+         #swagger.security = [{ "bearerAuth": [] }]
+         #swagger.parameters['id'] = { in: 'path', type: 'string', required: true }
+         */
+        try {
+            const { id } = req.params;
+            const { buktiTransferUrl } = req.body;
+
+            if (!Types.ObjectId.isValid(id)) {
+                return res.status(400).json({ message: 'ID Kwitansi tidak valid', data: null });
+            }
+
+            const kwitansi = await KwitansiModel.findByIdAndUpdate(
+                id,
+                { buktiTransferUrl },
+                { new: true }
+            )
+                .populate('santriId', 'namaLengkap nis nik fotoUrl')
+                .populate('diCatatOleh', 'namaLengkap');
+
+            if (!kwitansi) {
+                return res.status(404).json({ message: 'Kwitansi tidak ditemukan', data: null });
+            }
+
+            return res.status(200).json({
+                message: 'Bukti transfer berhasil diperbarui',
+                data: kwitansi,
+            });
+        } catch (error) {
+            const err = error as Error;
+            return res.status(500).json({ message: err.message, data: null });
+        }
+    },
+
     async getRiwayatBySantriId(req: Request, res: Response) {
         /**
          #swagger.tags = ['Kasir']
-         #swagger.summary = 'Ambil riwayat kwitansi / transaksi (dapat difilter by santriId) beserta ringkasan pembayaran & tunggakan'
+         #swagger.summary = 'Ambil riwayat kwitansi / transaksi (dapat difilter by santriId, metode, bukti TF, tanggal, search)'
          #swagger.security = [{ "bearerAuth": [] }]
-         #swagger.parameters['santriId'] = { in: 'query', type: 'string', description: 'Filter ID Santri (opsional)' }
-         #swagger.parameters['page'] = { in: 'query', type: 'number', default: 1 }
-         #swagger.parameters['limit'] = { in: 'query', type: 'number', default: 10 }
          */
         try {
-            const { santriId, page = 1, limit = 10 } = req.query;
+            const {
+                santriId,
+                metodePembayaran,
+                hasBukti,
+                search,
+                startDate,
+                endDate,
+                page = 1,
+                limit = 10,
+            } = req.query;
 
             if (santriId && !Types.ObjectId.isValid(santriId as string)) {
                 return res.status(400).json({
                     message: 'santriId tidak valid',
-                    data: null
-                })
+                    data: null,
+                });
             }
 
             const filter: Record<string, unknown> = {};
-            if (santriId) filter.santriId = santriId;
+
+            if (santriId) {
+                filter.santriId = santriId;
+            }
+
+            if (metodePembayaran) {
+                filter.metodePembayaran = metodePembayaran;
+            }
+
+            if (hasBukti === 'true') {
+                filter.buktiTransferUrl = { $exists: true, $ne: '' };
+            } else if (hasBukti === 'false') {
+                filter.metodePembayaran = 'transfer';
+                filter.$or = [
+                    { buktiTransferUrl: { $exists: false } },
+                    { buktiTransferUrl: '' },
+                    { buktiTransferUrl: null },
+                ];
+            }
+
+            if (startDate || endDate) {
+                const dateFilter: Record<string, Date> = {};
+                if (startDate) dateFilter.$gte = new Date(startDate as string);
+                if (endDate) {
+                    const end = new Date(endDate as string);
+                    end.setHours(23, 59, 59, 999);
+                    dateFilter.$lte = end;
+                }
+                filter.createdAt = dateFilter;
+            }
+
+            if (search) {
+                const searchStr = String(search).trim();
+                const matchingSantris = await SantriModels.find({
+                    namaLengkap: { $regex: searchStr, $options: 'i' },
+                }).select('_id');
+
+                const santriIdsFound = matchingSantris.map((s) => s._id);
+
+                filter.$or = [
+                    { nomorKwitansi: { $regex: searchStr, $options: 'i' } },
+                    { santriId: { $in: santriIdsFound } },
+                ];
+            }
 
             const pageNum = Number(page);
             const limitNum = Number(limit);
             const skip = (pageNum - 1) * limitNum;
 
-            const [kwitansi, total, aggregateSudahBayar, tagihanBelumLunas] = await Promise.all([
+            const [
+                kwitansi,
+                total,
+                aggregateSudahBayar,
+                aggregateCash,
+                aggregateTransfer,
+                totalPendingBukti,
+                tagihanBelumLunas,
+            ] = await Promise.all([
                 KwitansiModel.find(filter)
+                    .populate('santriId', 'namaLengkap nis nik fotoUrl')
                     .populate('diCatatOleh', 'namaLengkap')
                     .sort({ createdAt: -1 })
                     .skip(skip)
@@ -285,28 +382,52 @@ export default {
                 KwitansiModel.countDocuments(filter),
                 KwitansiModel.aggregate([
                     { $match: filter },
-                    { $group: { _id: null, total: { $sum: '$totalNominal' } } }
+                    { $group: { _id: null, total: { $sum: '$totalNominal' } } },
                 ]),
+                KwitansiModel.aggregate([
+                    { $match: { ...filter, metodePembayaran: 'cash' } },
+                    { $group: { _id: null, total: { $sum: '$totalNominal' } } },
+                ]),
+                KwitansiModel.aggregate([
+                    { $match: { ...filter, metodePembayaran: 'transfer' } },
+                    { $group: { _id: null, total: { $sum: '$totalNominal' } } },
+                ]),
+                KwitansiModel.countDocuments({
+                    ...filter,
+                    metodePembayaran: 'transfer',
+                    $or: [
+                        { buktiTransferUrl: { $exists: false } },
+                        { buktiTransferUrl: '' },
+                        { buktiTransferUrl: null },
+                    ],
+                }),
                 TagihanModel.find(
                     santriId ? { santriId, status: { $ne: 'lunas' } } : { status: { $ne: 'lunas' } }
-                )
+                ),
             ]);
 
             const totalSudahBayar = aggregateSudahBayar[0]?.total || 0;
+            const totalCash = aggregateCash[0]?.total || 0;
+            const totalTransfer = aggregateTransfer[0]?.total || 0;
 
-            const totalTunggakan = (await Promise.all(
-                tagihanBelumLunas.map(async (t) => {
-                    const semuaPembayaran = await PembayaranModel.find({ tagihanId: t._id });
-                    const totalTerbayar = semuaPembayaran.reduce((sum, p) => sum + p.nominalBayar, 0);
-                    return Math.max(0, t.nominalTagihan - totalTerbayar);
-                })
-            )).reduce((sum, sisa) => sum + sisa, 0);
+            const totalTunggakan = (
+                await Promise.all(
+                    tagihanBelumLunas.map(async (t) => {
+                        const semuaPembayaran = await PembayaranModel.find({ tagihanId: t._id });
+                        const totalTerbayar = semuaPembayaran.reduce((sum, p) => sum + p.nominalBayar, 0);
+                        return Math.max(0, t.nominalTagihan - totalTerbayar);
+                    })
+                )
+            ).reduce((sum, sisa) => sum + sisa, 0);
 
             return res.status(200).json({
                 message: 'Data berhasil diambil',
                 data: kwitansi,
                 summary: {
                     totalSudahBayar,
+                    totalCash,
+                    totalTransfer,
+                    totalPendingBukti,
                     totalTunggakan,
                 },
                 meta: {
@@ -315,13 +436,13 @@ export default {
                     total,
                     totalPages: Math.ceil(total / limitNum),
                 },
-            })
+            });
         } catch (error) {
             const err = error as Error;
             return res.status(500).json({
                 message: err.message,
                 data: null,
-            })
+            });
         }
     }
 };

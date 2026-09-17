@@ -22,6 +22,7 @@ export interface Kwitansi {
     saldoSnapshot: SaldoSnapshot[];
     totalNominal: number;
     metodePembayaran: 'cash' | 'transfer';
+    buktiTransferUrl?: string;
     diCatatOleh: User;
     createdAt: string;
 }
