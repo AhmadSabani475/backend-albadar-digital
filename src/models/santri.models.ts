@@ -147,9 +147,13 @@ const SantriSchema = new Schema<Santri>({
         type: Schema.Types.Date,
         required: true
     },
+    tanggalKeluar: {
+        type: Schema.Types.Date,
+        required: false
+    },
     status: {
         type: Schema.Types.String,
-        enum: ['aktif', 'alumni', 'dikeluarkan'],
+        enum: ['aktif', 'alumni'],
         required: true
     },
     laundry: {

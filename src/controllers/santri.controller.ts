@@ -128,7 +128,7 @@ export default {
 */
         try {
             const { status, page = 1, limit = 10 } = req.query;
-            const validStatus = ['aktif', 'alumni', 'dikeluarkan'];
+            const validStatus = ['aktif', 'alumni'];
             if (status && !validStatus.includes(status as string)) {
                 return res.status(400).json({
                     message: 'Status tidak valid',
@@ -340,6 +340,75 @@ export default {
                 message: err.message,
                 data: null
             })
+        }
+    },
+    async updateStatus(req: Request, res: Response) {
+        /**
+         #swagger.tags = ['Santri']
+         #swagger.summary = 'Ubah status santri (aktif/alumni)'
+         #swagger.security = [{ "bearerAuth": [] }]
+         #swagger.parameters['id'] = { in: 'path', required: true, type: 'string', description: 'ID Santri' }
+         #swagger.requestBody = {
+            required: true,
+            content: {
+                "application/json": {
+                    schema: {
+                        type: "object",
+                        properties: {
+                            status: { type: "string", enum: ["aktif", "alumni"] }
+                        }
+                    }
+                }
+            }
+         }
+        */
+        try {
+            const { id } = req.params;
+            const { status } = req.body as { status: string };
+
+            if (!Types.ObjectId.isValid(id)) {
+                return res.status(400).json({
+                    message: "ID tidak valid",
+                    data: null
+                });
+            }
+
+            const validStatus = ['aktif', 'alumni'];
+            if (!validStatus.includes(status)) {
+                return res.status(400).json({
+                    message: "Status harus aktif atau alumni",
+                    data: null
+                });
+            }
+
+            const santri = await SantriModels.findById(id);
+            if (!santri) {
+                return res.status(404).json({
+                    message: "Santri tidak ditemukan",
+                    data: null
+                });
+            }
+
+            santri.status = status as 'aktif' | 'alumni';
+
+            if (status === 'aktif') {
+                santri.tanggalKeluar = undefined;
+            } else if (!santri.tanggalKeluar) {
+                santri.tanggalKeluar = new Date();
+            }
+
+            await santri.save();
+
+            return res.status(200).json({
+                message: "Status santri berhasil diubah",
+                data: santri
+            });
+        } catch (error) {
+            const err = error as unknown as Error;
+            res.status(400).json({
+                message: err.message,
+                data: null
+            });
         }
     },
 

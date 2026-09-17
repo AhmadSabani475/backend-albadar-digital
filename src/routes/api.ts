@@ -22,12 +22,14 @@ import mutasiRekeningController from "../controllers/mutasiRekening.controller";
 import uangJajanController from "../controllers/uangJajan.controller";
 import kasirController from "../controllers/kasir.controller";
 import { dashboardController } from "../controllers/dashboard.controller";
+import laporanController from "../controllers/laporan.controller";
 
 const router = express.Router();
 router.get('/users', authMiddleware, checkRole(['admin']), usersController.findAllUsers);
 router.post('/users', authMiddleware, checkRole(['admin']), usersController.create);
 router.delete('/users/:id', authMiddleware, checkRole(['admin']), usersController.deleteById)
 router.put('/users/:id/reset-password-default', authMiddleware, checkRole(['admin']), usersController.resetPasswordDefault);
+router.put('/users/:id/role', authMiddleware, checkRole(['admin']), usersController.updateRole);
 
 router.post('/auth/login', authController.login);
 router.get('/auth/me', authMiddleware, authController.me);
@@ -38,6 +40,7 @@ router.get('/santri', authMiddleware, checkRole(['admin']), santriController.fin
 router.get('/santri/:id', authMiddleware, checkRole(['admin']), santriController.findById);
 router.put('/santri/:id', authMiddleware, checkRole(['admin']), santriController.editById)
 router.delete('/santri/:id', authMiddleware, checkRole(['admin']), santriController.deleteById)
+router.put('/santri/:id/status', authMiddleware, checkRole(['admin']), santriController.updateStatus);
 
 router.post('/asrama', authMiddleware, checkRole(['admin']), asramaController.create);
 router.get('/asrama', authMiddleware, checkRole(['admin']), asramaController.findAll);
@@ -121,4 +124,5 @@ router.get('/kasir/:id/ringkasan', authMiddleware, checkRole(['admin', 'bendahar
 router.get('/kwitansi', authMiddleware, checkRole(['admin', 'bendahara']), kasirController.getRiwayatBySantriId);
 router.get('/dashboard/summary', authMiddleware, dashboardController.getSummary);
 
+router.get('/laporan/tunggakan', authMiddleware, checkRole(['admin', 'bendahara']), laporanController.getAllTunggakan);
 export default router;

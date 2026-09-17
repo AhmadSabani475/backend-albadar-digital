@@ -55,6 +55,7 @@ export interface Santri {
     sekolahId?: Types.ObjectId;
     kamarId?: Types.ObjectId;
     tanggalTerdaftar: Date;
-    status: 'aktif' | 'alumni' | 'dikeluarkan'
+    tanggalKeluar?: Date;
+    status: 'aktif' | 'alumni'
     laundry: boolean;
 }

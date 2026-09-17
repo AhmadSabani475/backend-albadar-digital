@@ -189,5 +189,59 @@ export default {
                 data: null
             })
         }
+    },
+    async updateRole(req: Request, res: Response) {
+        /**
+         #swagger.tags = ['Users']
+         #swagger.summary = 'Ubah role user (khusus admin)'
+         #swagger.security = [{ "bearerAuth": [] }]
+         #swagger.parameters['id'] = { in: 'path', required: true, type: 'string', description: 'ID User' }
+         #swagger.requestBody = {
+            required: true,
+            content: {
+                "application/json": {
+                    schema: {
+                        type: "object",
+                        properties: {
+                            role: { type: "string", enum: ["admin", "bendahara"], example: "bendahara" }
+                        }
+                    }
+                }
+            }
+         }
+        */
+        try {
+            const { id } = req.params;
+            const { role } = req.body as { role: string };
+
+            if (!['admin', 'bendahara'].includes(role)) {
+                return res.status(400).json({
+                    message: "Role harus admin atau bendahara",
+                    data: null
+                });
+            }
+
+            const user = await userModels.findById(id);
+            if (!user) {
+                return res.status(404).json({
+                    message: "User tidak ditemukan",
+                    data: null
+                });
+            }
+
+            user.role = role as 'admin' | 'bendahara';
+            await user.save();
+
+            return res.status(200).json({
+                message: "Role berhasil diubah",
+                data: user
+            });
+        } catch (error) {
+            const err = error as unknown as Error;
+            res.status(400).json({
+                message: err.message,
+                data: null
+            });
+        }
     }
 }       
