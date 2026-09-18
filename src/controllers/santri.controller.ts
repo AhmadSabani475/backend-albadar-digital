@@ -4,7 +4,6 @@ import { Santri } from "../types/Santri";
 import * as Yup from "yup";
 import { Request, Response } from "express";
 import { Types } from "mongoose";
-import SekolahModel from "../models/sekolah.models";
 
 
 
@@ -55,7 +54,10 @@ const santriValidateSchema = Yup.object({
     ayah: orangtuaValidateSchema.required("Data ayah wajib diisi"),
     ibu: orangtuaValidateSchema.required("Data ibu wajib diisi"),
     alamat: alamatValidateSchema.required("Alamat wajib diisi"),
-    sekolahId: Yup.string().required("Sekolah wajib dipilih"),
+    sekolah: Yup.string().optional(),
+    kelasFormal: Yup.string().optional(),
+    kelasNgaji: Yup.string().optional(),
+    sekolahId: Yup.string().optional(),
     kamarId: Yup.string().required("Kamar wajib dipilih"),
     laundry: Yup.boolean().optional(),
 })
@@ -84,13 +86,6 @@ export default {
             if (!kamar) {
                 return res.status(404).json({
                     message: "Kamar tidak ditemukan",
-                    data: null
-                })
-            }
-            const sekolah = await SekolahModel.findById(santri.sekolahId);
-            if (!sekolah) {
-                return res.status(404).json({
-                    message: "Sekolah tidak ditemukan",
                     data: null
                 })
             }
@@ -146,7 +141,6 @@ export default {
                         path: 'kamarId',
                         populate: 'asramaId'
                     })
-                    .populate('sekolahId')
                     .skip(skip)
                     .limit(limitNum),
                 SantriModels.countDocuments(filter),
@@ -192,7 +186,7 @@ export default {
             const santri = await SantriModels.findById(id).populate({
                 path: 'kamarId',
                 populate: 'asramaId'
-            }).populate('sekolahId');
+            });
 
             if (!santri) {
                 return res.status(404).json({
@@ -264,15 +258,6 @@ export default {
                         message: "Kamar sudah penuh",
                         data: null
                     })
-                }
-            }
-            if (santri.sekolahId && santri.sekolahId.toString() !== santriExist.sekolahId?.toString()) {
-                const sekolah = await SekolahModel.findById(santri.sekolahId);
-                if (!sekolah) {
-                    return res.status(404).json({
-                        message: "Sekolah tidak ditemukan",
-                        data: null
-                    });
                 }
             }
 

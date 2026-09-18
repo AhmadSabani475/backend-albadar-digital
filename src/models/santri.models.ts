@@ -133,10 +133,22 @@ const SantriSchema = new Schema<Santri>({
         type: AlamatSchema,
         required: true
     },
+    sekolah: {
+        type: Schema.Types.String,
+        required: false
+    },
+    kelasFormal: {
+        type: Schema.Types.String,
+        required: false
+    },
+    kelasNgaji: {
+        type: Schema.Types.String,
+        required: false
+    },
     sekolahId: {
         type: Schema.Types.ObjectId,
         ref: 'Sekolah',
-        required: true
+        required: false
     },
     kamarId: {
         type: Schema.Types.ObjectId,

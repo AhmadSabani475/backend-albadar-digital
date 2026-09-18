@@ -52,6 +52,9 @@ export interface Santri {
     ibu: Orangtua;
     pendidikanTerakhir: PendidikanSebelumnya;
     alamat: Alamat;
+    sekolah?: string;
+    kelasFormal?: string;
+    kelasNgaji?: string;
     sekolahId?: Types.ObjectId;
     kamarId?: Types.ObjectId;
     tanggalTerdaftar: Date;

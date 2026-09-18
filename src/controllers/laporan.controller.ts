@@ -1,6 +1,5 @@
-import { Request, Response } from "express"
-import TahunAjaranModel from "../models/tahunajaran.models";
-import KelasSantriModel from "../models/kelassantri.models";
+import { Request, Response } from "express";
+import SantriModels from "../models/santri.models";
 import TagihanModel from "../models/tagihan.models";
 import PembayaranModel from "../models/pembayaran.models";
 
@@ -12,24 +11,15 @@ export default {
             const filter: Record<string, unknown> = { status: { $ne: 'lunas' } };
             if (santriId) filter.santriId = santriId;
             if (jenisTagihanId) filter.jenisTagihanId = jenisTagihanId;
-            let santriIdsFromKelas: string[] | null = null;
             if (kelasId) {
-                const tahunAjaranAktif = await TahunAjaranModel.findOne({ is_active: true });
-                if (tahunAjaranAktif) {
-                    const kelassantri = await KelasSantriModel.find({
-                        tahunAjaranId: tahunAjaranAktif._id,
-                        tingkatKelasId: kelasId
-                    });
-                    santriIdsFromKelas = kelassantri.map((k) => k.santriId.toString())
-                } else {
-                    santriIdsFromKelas = []
-                }
+                const santriList = await SantriModels.find({ kelasFormal: kelasId }, '_id');
+                const santriIdsFromKelas = santriList.map((s) => s._id.toString());
                 filter.santriId = { $in: santriIdsFromKelas };
             }
             const tagihanBelumLunas = await TagihanModel.find(filter)
                 .populate({
                     path: 'santriId',
-                    select: 'namaLengkap ayah kamarId',
+                    select: 'namaLengkap ayah kamarId sekolah kelasFormal kelasNgaji',
                     populate: {
                         path: 'kamarId',
                         select: 'nama asramaId',
@@ -45,13 +35,6 @@ export default {
                     const pembayaran = await PembayaranModel.find({ tagihanId: t._id });
                     const terbayar = pembayaran.reduce((sum, p) => sum + p.nominalBayar, 0);
                     const sisatagihan = Math.max(0, t.nominalTagihan - terbayar);
-                    const kelasSantri = await KelasSantriModel.findOne({
-                        santriId: (t.santriId)?._id,
-                        status: 'aktif'
-                    }).populate({
-                        path: 'tingkatKelasId',
-                        select: 'nama'
-                    });
                     return {
                         santriId: (t.santriId as any)?._id?.toString(),
                         santri: t.santriId,
