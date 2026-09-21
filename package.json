@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "nodemon src/index.ts",
     "docs": "ts-node src/docs/swagger.ts",
-    "seed:santri-kelas": "ts-node src/script/seedSantriDenganKelas.ts"
+    "seed:santri-kelas": "ts-node src/script/seedSantriDenganKelas.ts",
+    "db:clear": "ts-node src/script/clearDB.ts"
   },
   "keywords": [],
   "author": "",
