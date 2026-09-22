@@ -146,7 +146,7 @@ export default {
                 santriFilter._id = { $in: santriIds };
             }
             if (hanyaLayananLaundry) {
-                santriFilter.layananLaundry = true;
+                santriFilter.laundry = true;
             }
 
             const santriList = await SantriModels.find(santriFilter);
